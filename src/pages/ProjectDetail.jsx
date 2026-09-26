@@ -14,6 +14,7 @@ import { projectsApi } from '../api/projects';
 import { tasksApi } from '../api/tasks';
 import EmptyState from '../components/ui/EmptyState';
 import Modal from '../components/ui/Modal';
+import ShareButton from '../components/ui/ShareButton';
 
 const statusIcon = {
   todo: Circle,
@@ -33,6 +34,7 @@ export default function ProjectDetail() {
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
@@ -44,21 +46,50 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+
+    console.log('Fetching project ID:', id);
+
     try {
-      setLoading(true);
-      const [projectData, tasksData] = await Promise.all([
-        projectsApi.get(id),
-        tasksApi.list(id),
-      ]);
+      // Project fetch karo
+      let projectData = null;
+      try {
+        const res = await projectsApi.get(id);
+        console.log('Project API response:', res);
+        // Defensive: unwrap if wrapped in .data
+        projectData = res?.data?.id ? res.data : res;
+      } catch (projErr) {
+        console.error('Project fetch failed:', projErr.response?.status, projErr.response?.data);
+        setError(
+          projErr.response?.status === 404
+            ? 'Project not found. It may have been deleted.'
+            : 'Failed to load project.'
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Tasks fetch karo
+      let tasksData = [];
+      try {
+        const tRes = await tasksApi.list(id);
+        console.log('Tasks API response:', tRes);
+        tasksData = Array.isArray(tRes) ? tRes : tRes?.data || [];
+      } catch (taskErr) {
+        console.error('Tasks fetch failed:', taskErr.response?.data);
+        tasksData = [];
+      }
+
       setProject(projectData);
       setTasks(tasksData);
     } catch (err) {
-      console.error('Fetch error:', err.response?.data);
-      toast.error('Failed to load project');
-      navigate('/projects');
+      console.error('Unexpected error:', err);
+      setError('Something went wrong.');
     } finally {
       setLoading(false);
     }
@@ -119,10 +150,32 @@ export default function ProjectDetail() {
     );
   }
 
-  if (!project) return null;
+  // Fallback: error ya project missing
+  if (error || !project) {
+    return (
+      <div className="text-center py-16">
+        <h2 className="text-lg font-semibold text-text-primary mb-2">
+          {error || 'Project not found'}
+        </h2>
+        <p className="text-sm text-text-muted mb-4">
+          Project ID: <code className="text-accent">{id}</code>
+        </p>
+        <p className="text-xs text-text-subtle mb-6">
+          Console (F12) mein detailed logs dekho
+        </p>
+        <Link to="/projects" className="btn-primary inline-flex">
+          Back to Projects
+        </Link>
+      </div>
+    );
+  }
 
-  const doneCount = tasks.filter((t) => t.status === 'done').length;
-  const progress = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
+  const tasksArray = Array.isArray(tasks) ? tasks : [];
+  const doneCount = tasksArray.filter((t) => t.status === 'done').length;
+  const progress =
+    tasksArray.length > 0
+      ? Math.round((doneCount / tasksArray.length) * 100)
+      : 0;
 
   return (
     <div>
@@ -139,26 +192,29 @@ export default function ProjectDetail() {
       <div className="flex items-start justify-between mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-text-primary mb-1">
-            {project.name}
+            {project.name || 'Untitled Project'}
           </h2>
           <p className="text-sm text-text-muted">
             {project.client?.name || 'No client'} • Due{' '}
-{project.deadline
-  ? new Date(project.deadline).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    })
-  : '—'}
+            {project.deadline
+              ? new Date(project.deadline).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              : '—'}
           </p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="btn-primary"
-        >
-          <Plus size={16} strokeWidth={2} />
-          Add Task
-        </button>
+        <div className="flex items-center gap-2">
+          <ShareButton project={project} onUpdate={setProject} />
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="btn-primary"
+          >
+            <Plus size={16} strokeWidth={2} />
+            Add Task
+          </button>
+        </div>
       </div>
 
       {/* Progress Card */}
@@ -166,7 +222,7 @@ export default function ProjectDetail() {
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs text-text-subtle">Overall Progress</span>
           <span className="text-xs font-medium text-text-primary tabular-nums">
-            {doneCount} / {tasks.length} done
+            {doneCount} / {tasksArray.length} done
           </span>
         </div>
         <div className="h-2 bg-bg-hover rounded-full overflow-hidden">
@@ -179,10 +235,10 @@ export default function ProjectDetail() {
 
       {/* Tasks */}
       <h3 className="text-sm font-semibold text-text-primary mb-3">
-        Tasks ({tasks.length})
+        Tasks ({tasksArray.length})
       </h3>
 
-      {tasks.length === 0 ? (
+      {tasksArray.length === 0 ? (
         <div className="card">
           <EmptyState
             icon={CheckCircle2}
@@ -201,8 +257,8 @@ export default function ProjectDetail() {
         </div>
       ) : (
         <div className="card p-0 divide-y divide-border">
-          {tasks.map((task) => {
-            const Icon = statusIcon[task.status];
+          {tasksArray.map((task) => {
+            const Icon = statusIcon[task.status] || Circle;
             return (
               <div
                 key={task.id}
@@ -210,7 +266,9 @@ export default function ProjectDetail() {
               >
                 <button
                   onClick={() => toggleTaskStatus(task)}
-                  className={`flex-shrink-0 ${statusColor[task.status]} hover:scale-110 transition-transform`}
+                  className={`flex-shrink-0 ${
+                    statusColor[task.status] || 'text-text-subtle'
+                  } hover:scale-110 transition-transform`}
                   title="Click to change status"
                 >
                   <Icon size={18} strokeWidth={2} />
@@ -228,7 +286,11 @@ export default function ProjectDetail() {
                   </p>
                   {task.due_date && (
                     <p className="text-xs text-text-subtle mt-0.5">
-                      Due {new Date(task.due_date).toLocaleDateString()}
+                      Due{' '}
+                      {new Date(task.due_date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </p>
                   )}
                 </div>

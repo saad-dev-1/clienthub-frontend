@@ -13,6 +13,14 @@ const statusStyles = {
   on_hold: 'badge-warning',
 };
 
+// Helper: extract array from any response shape
+function extractArray(response) {
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response?.data?.data)) return response.data.data;
+  return [];
+}
+
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [clients, setClients] = useState([]);
@@ -36,24 +44,41 @@ export default function Projects() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [projectsData, clientsData] = await Promise.all([
+      const [projectsResponse, clientsResponse] = await Promise.all([
         projectsApi.list(),
         clientsApi.list(),
       ]);
-      setProjects(projectsData);
-      setClients(clientsData);
+
+      // 🔍 DEBUG LOGS
+      console.log('🚀 Projects API raw:', projectsResponse);
+      console.log('🚀 Clients API raw:', clientsResponse);
+
+      const projectsArray = extractArray(projectsResponse);
+      const clientsArray = extractArray(clientsResponse);
+
+      console.log('✅ Projects array:', projectsArray);
+      console.log('✅ First project:', projectsArray[0]);
+      console.log('✅ First project ID:', projectsArray[0]?.id);
+
+      setProjects(projectsArray);
+      setClients(clientsArray);
     } catch (err) {
-      console.error('Fetch error:', err.response?.data);
+      console.error('❌ Fetch error:', err.response?.data || err);
       toast.error('Failed to load projects');
+      setProjects([]);
+      setClients([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filtered = projects.filter(
+  const projectsArray = Array.isArray(projects) ? projects : [];
+  const clientsArray = Array.isArray(clients) ? clients : [];
+
+  const filtered = projectsArray.filter(
     (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      (p.client?.name && p.client.name.toLowerCase().includes(search.toLowerCase()))
+      (p.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (p.client?.name || '').toLowerCase().includes(search.toLowerCase())
   );
 
   const handleSubmit = async (e) => {
@@ -66,7 +91,7 @@ export default function Projects() {
         deadline: form.deadline || null,
       };
       const newProject = await projectsApi.create(payload);
-      setProjects([newProject, ...projects]);
+      setProjects([newProject, ...projectsArray]);
       setForm({
         name: '',
         client_id: '',
@@ -156,8 +181,11 @@ export default function Projects() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {filtered.map((project, index) => (
+            <ProjectCard
+              key={project.id || project._id || index}
+              project={project}
+            />
           ))}
         </div>
       )}
@@ -189,7 +217,7 @@ export default function Projects() {
               className="input"
             >
               <option value="">— No client —</option>
-              {clients.map((c) => (
+              {clientsArray.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -243,23 +271,42 @@ export default function Projects() {
 }
 
 function ProjectCard({ project }) {
+  // Defensive: try multiple ID fields
+  const projectId = project.id || project._id || project.uuid;
+
+  const handleClick = (e) => {
+    if (!projectId) {
+      e.preventDefault();
+      console.error('❌ Project ID missing:', project);
+      return;
+    }
+  };
+
   return (
     <Link
-      to={`/projects/${project.id}`}
+      to={projectId ? `/projects/${projectId}` : '#'}
+      onClick={handleClick}
       className="block card hover:border-border-strong transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-sm font-semibold text-text-primary">
-              {project.name}
+              {project.name || 'Untitled'}
             </h3>
             <span className={statusStyles[project.status] || 'badge-neutral'}>
-              {project.status.replace('_', ' ')}
+              {(project.status || 'active').replace('_', ' ')}
             </span>
           </div>
           <p className="text-xs text-text-muted">
-            {project.client?.name || 'No client'} • Due {project.deadline || '—'}
+            {project.client?.name || 'No client'} • Due{' '}
+            {project.deadline
+              ? new Date(project.deadline).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              : '—'}
           </p>
         </div>
         <button
@@ -274,13 +321,13 @@ function ProjectCard({ project }) {
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs text-text-subtle">Progress</span>
           <span className="text-xs font-medium text-text-primary tabular-nums">
-            {project.progress}%
+            {project.progress || 0}%
           </span>
         </div>
         <div className="h-1.5 bg-bg-hover rounded-full overflow-hidden">
           <div
             className="h-full bg-accent transition-all duration-300"
-            style={{ width: `${project.progress}%` }}
+            style={{ width: `${project.progress || 0}%` }}
           />
         </div>
       </div>
