@@ -1,34 +1,11 @@
-import { useState } from 'react';
-import { Plus, Search, FolderKanban, MoreHorizontal } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Plus, Search, FolderKanban, MoreHorizontal, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
 import EmptyState from '../components/ui/EmptyState';
-
-const mockProjects = [
-  {
-    id: 1,
-    name: 'Nexus Store',
-    client: 'Ali Furniture',
-    status: 'active',
-    progress: 78,
-    deadline: '2026-10-12',
-  },
-  {
-    id: 2,
-    name: 'AANGAN Website',
-    client: 'Ahmed Clothing',
-    status: 'completed',
-    progress: 100,
-    deadline: '2026-09-20',
-  },
-  {
-    id: 3,
-    name: 'Portfolio Redesign',
-    client: 'XYZ Agency',
-    status: 'active',
-    progress: 45,
-    deadline: '2026-11-05',
-  },
-];
+import { projectsApi } from '../api/projects';
+import { clientsApi } from '../api/clients';
 
 const statusStyles = {
   active: 'badge-accent',
@@ -37,35 +14,79 @@ const statusStyles = {
 };
 
 export default function Projects() {
-  const [projects, setProjects] = useState(mockProjects);
+  const [projects, setProjects] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
     name: '',
-    client: '',
+    client_id: '',
     deadline: '',
     description: '',
+    status: 'active',
+    progress: 0,
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [projectsData, clientsData] = await Promise.all([
+        projectsApi.list(),
+        clientsApi.list(),
+      ]);
+      setProjects(projectsData);
+      setClients(clientsData);
+    } catch (err) {
+      console.error('Fetch error:', err.response?.data);
+      toast.error('Failed to load projects');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filtered = projects.filter(
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.client.toLowerCase().includes(search.toLowerCase())
+      (p.client?.name && p.client.name.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newProject = {
-      id: projects.length + 1,
-      name: form.name,
-      client: form.client,
-      status: 'active',
-      progress: 0,
-      deadline: form.deadline || '—',
-    };
-    setProjects([newProject, ...projects]);
-    setForm({ name: '', client: '', deadline: '', description: '' });
-    setIsModalOpen(false);
+    setSubmitting(true);
+    try {
+      const payload = {
+        ...form,
+        client_id: form.client_id || null,
+        deadline: form.deadline || null,
+      };
+      const newProject = await projectsApi.create(payload);
+      setProjects([newProject, ...projects]);
+      setForm({
+        name: '',
+        client_id: '',
+        deadline: '',
+        description: '',
+        status: 'active',
+        progress: 0,
+      });
+      setIsModalOpen(false);
+      toast.success('Project created');
+    } catch (err) {
+      console.error('Create project error:', err.response?.data);
+      const errors = err.response?.data?.errors;
+      const message = errors
+        ? Object.values(errors)[0][0]
+        : err.response?.data?.message || 'Failed to create project';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -106,7 +127,11 @@ export default function Projects() {
       </div>
 
       {/* Projects List */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="card flex items-center justify-center py-12">
+          <Loader2 size={20} className="text-text-muted animate-spin" />
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="card">
           <EmptyState
             icon={FolderKanban}
@@ -157,15 +182,19 @@ export default function Projects() {
           </div>
 
           <div>
-            <label className="label">Client *</label>
-            <input
-              type="text"
-              value={form.client}
-              onChange={(e) => setForm({ ...form, client: e.target.value })}
+            <label className="label">Client</label>
+            <select
+              value={form.client_id}
+              onChange={(e) => setForm({ ...form, client_id: e.target.value })}
               className="input"
-              placeholder="Ali Furniture"
-              required
-            />
+            >
+              <option value="">— No client —</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -195,11 +224,16 @@ export default function Projects() {
               type="button"
               onClick={() => setIsModalOpen(false)}
               className="btn-secondary flex-1"
+              disabled={submitting}
             >
               Cancel
             </button>
-            <button type="submit" className="btn-primary flex-1">
-              Create Project
+            <button
+              type="submit"
+              className="btn-primary flex-1"
+              disabled={submitting}
+            >
+              {submitting ? 'Creating...' : 'Create Project'}
             </button>
           </div>
         </form>
@@ -210,22 +244,28 @@ export default function Projects() {
 
 function ProjectCard({ project }) {
   return (
-    <div className="card hover:border-border-strong transition-colors cursor-pointer">
+    <Link
+      to={`/projects/${project.id}`}
+      className="block card hover:border-border-strong transition-colors cursor-pointer"
+    >
       <div className="flex items-start justify-between mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-sm font-semibold text-text-primary">
               {project.name}
             </h3>
-            <span className={statusStyles[project.status]}>
+            <span className={statusStyles[project.status] || 'badge-neutral'}>
               {project.status.replace('_', ' ')}
             </span>
           </div>
           <p className="text-xs text-text-muted">
-            {project.client} • Due {project.deadline}
+            {project.client?.name || 'No client'} • Due {project.deadline || '—'}
           </p>
         </div>
-        <button className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors">
+        <button
+          onClick={(e) => e.preventDefault()}
+          className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+        >
           <MoreHorizontal size={16} strokeWidth={1.75} />
         </button>
       </div>
@@ -244,6 +284,6 @@ function ProjectCard({ project }) {
           />
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

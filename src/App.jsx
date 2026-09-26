@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import Projects from './pages/Projects';
+import ProjectDetail from './pages/ProjectDetail';
 import AppLayout from './components/layout/AppLayout';
 
 export default function App() {
@@ -22,6 +23,9 @@ export default function App() {
       </Route>
       <Route element={<AppLayout title="Projects" />}>
         <Route path="/projects" element={<Projects />} />
+      </Route>
+      <Route element={<AppLayout title="Project Details" />}>
+        <Route path="/projects/:id" element={<ProjectDetail />} />
       </Route>
     </Routes>
   );
