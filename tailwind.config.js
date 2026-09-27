@@ -8,25 +8,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ClientHub Design System
         bg: {
-          base: '#09090B',
-          card: '#18181B',
-          hover: '#27272A',
+          base: 'rgb(var(--bg-base) / <alpha-value>)',
+          card: 'rgb(var(--bg-card) / <alpha-value>)',
+          hover: 'rgb(var(--bg-hover) / <alpha-value>)',
         },
         border: {
-          DEFAULT: '#27272A',
-          strong: '#3F3F46',
+          DEFAULT: 'rgb(var(--border) / <alpha-value>)',
+          strong: 'rgb(var(--border-strong) / <alpha-value>)',
         },
         text: {
-          primary: '#FAFAFA',
-          muted: '#A1A1AA',
-          subtle: '#71717A',
+          primary: 'rgb(var(--text-primary) / <alpha-value>)',
+          muted: 'rgb(var(--text-muted) / <alpha-value>)',
+          subtle: 'rgb(var(--text-subtle) / <alpha-value>)',
         },
         accent: {
           DEFAULT: '#6366F1',
           hover: '#818CF8',
-          subtle: '#1E1B4B',
+          subtle: 'rgb(var(--accent-subtle) / <alpha-value>)',
         },
         success: '#10B981',
         warning: '#F59E0B',
@@ -38,9 +37,6 @@ export default {
       borderRadius: {
         'lg': '8px',
         'xl': '12px',
-      },
-      transitionDuration: {
-        DEFAULT: '150ms',
       },
     },
   },
