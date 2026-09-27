@@ -34,10 +34,10 @@ export default function Login() {
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">C</span>
+            <span className="text-white font-semibold text-sm">K</span>
           </div>
           <span className="text-lg font-semibold text-text-primary">
-            ClientHub
+            Klient
           </span>
         </div>
 
@@ -87,7 +87,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input"
-                placeholder="••••••••"
+                placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢"
                 required
                 autoComplete="current-password"
               />

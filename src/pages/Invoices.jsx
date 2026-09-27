@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -178,14 +177,17 @@ export default function Invoices() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-text-primary">
+          <h2 className="text-2xl heading-tighter text-text-primary">
             Invoices
           </h2>
           <p className="text-sm text-text-muted mt-1">
             Create and track your invoices
           </p>
         </div>
-        <button onClick={openCreateModal} className="btn-primary w-full sm:w-auto justify-center">
+        <button
+          onClick={openCreateModal}
+          className="btn-primary w-full sm:w-auto"
+        >
           <Plus size={16} strokeWidth={2} />
           New Invoice
         </button>
@@ -233,11 +235,12 @@ export default function Invoices() {
           />
         </div>
       ) : (
-        <div className="card p-0 divide-y divide-border">
-          {filtered.map((invoice) => (
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+          {filtered.map((invoice, index) => (
             <InvoiceRow
               key={invoice.id}
               invoice={invoice}
+              isLast={index === filtered.length - 1}
               onDelete={handleDelete}
               onMarkPaid={handleMarkPaid}
               onDownload={handleDownload}
@@ -365,7 +368,7 @@ export default function Invoices() {
 
             <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
               <span className="text-sm text-text-muted">Total</span>
-              <span className="text-lg font-semibold text-text-primary tabular-nums">
+              <span className="text-lg font-semibold text-text-primary tabular-nums heading-tight">
                 ${total.toFixed(2)}
               </span>
             </div>
@@ -407,7 +410,7 @@ export default function Invoices() {
   );
 }
 
-function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
+function InvoiceRow({ invoice, isLast, onDelete, onMarkPaid, onDownload }) {
   const formattedTotal = parseFloat(invoice.total || 0).toFixed(2);
   const formattedDue = invoice.due_date
     ? new Date(invoice.due_date).toLocaleDateString('en-US', {
@@ -418,10 +421,14 @@ function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
     : '—';
 
   return (
-    <div className="p-3 sm:p-4 hover:bg-bg-hover transition-colors group">
+    <div
+      className={`p-4 hover:bg-bg-hover transition-colors group ${
+        !isLast ? 'border-b border-border' : ''
+      }`}
+    >
       <div className="flex items-start gap-3">
         {/* Icon */}
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
           <FileText size={16} strokeWidth={1.75} className="text-accent" />
         </div>
 
@@ -446,11 +453,10 @@ function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
             ${formattedTotal}
           </p>
 
-          {/* Desktop hover actions */}
           <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => onDownload(invoice)}
-              className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent/10 transition-colors"
+              className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent-subtle transition-colors"
               title="Download PDF"
             >
               <Download size={14} strokeWidth={1.75} />
@@ -468,7 +474,7 @@ function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
 
             <button
               onClick={() => onDelete(invoice)}
-              className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
+              className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/5 transition-colors"
               title="Delete"
             >
               <Trash2 size={14} strokeWidth={1.75} />
@@ -477,11 +483,11 @@ function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
         </div>
       </div>
 
-      {/* Mobile actions — full width row below */}
-      <div className="flex sm:hidden items-center gap-2 mt-3 pl-12">
+      {/* Mobile actions */}
+      <div className="flex sm:hidden items-center gap-2 mt-3 pl-13">
         <button
           onClick={() => onDownload(invoice)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-accent hover:border-accent/30 hover:bg-accent/5 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-accent hover:border-accent/30 transition-colors"
         >
           <Download size={13} strokeWidth={1.75} />
           PDF
@@ -490,7 +496,7 @@ function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
         {invoice.status !== 'paid' && (
           <button
             onClick={() => onMarkPaid(invoice)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-success hover:border-success/30 hover:bg-success/5 transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-success hover:border-success/30 transition-colors"
           >
             <CheckCircle2 size={13} strokeWidth={1.75} />
             Paid

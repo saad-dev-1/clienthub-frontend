@@ -9,8 +9,8 @@ export default function Settings() {
 
   return (
     <div>
-      <div className="mb-6 sm:mb-8">
-        <h2 className="text-2xl font-semibold text-text-primary">
+      <div className="mb-8">
+        <h2 className="text-2xl heading-tighter text-text-primary">
           Settings
         </h2>
         <p className="text-sm text-text-muted mt-1">
@@ -18,7 +18,7 @@ export default function Settings() {
         </p>
       </div>
 
-      <div className="space-y-4 sm:space-y-6 max-w-2xl">
+      <div className="space-y-6 max-w-2xl">
         <ProfileSection user={user} />
         <PasswordSection />
       </div>
@@ -58,12 +58,12 @@ function ProfileSection({ user }) {
 
   return (
     <div className="card">
-      <div className="flex items-start gap-3 mb-6">
-        <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
+      <div className="flex items-start gap-3 mb-6 pb-6 border-b border-border">
+        <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
           <User size={18} strokeWidth={1.75} className="text-accent" />
         </div>
-        <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-text-primary">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-semibold heading-tight text-text-primary">
             Profile Information
           </h3>
           <p className="text-xs text-text-muted mt-0.5">
@@ -101,7 +101,7 @@ function ProfileSection({ user }) {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full sm:w-auto justify-center"
+            className="btn-primary w-full sm:w-auto"
           >
             {loading ? (
               <>
@@ -157,12 +157,12 @@ function PasswordSection() {
 
   return (
     <div className="card">
-      <div className="flex items-start gap-3 mb-6">
-        <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
+      <div className="flex items-start gap-3 mb-6 pb-6 border-b border-border">
+        <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
           <Lock size={18} strokeWidth={1.75} className="text-accent" />
         </div>
-        <div className="min-w-0">
-          <h3 className="text-sm font-semibold text-text-primary">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-semibold heading-tight text-text-primary">
             Change Password
           </h3>
           <p className="text-xs text-text-muted mt-0.5">
@@ -215,7 +215,7 @@ function PasswordSection() {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full sm:w-auto justify-center"
+            className="btn-primary w-full sm:w-auto"
           >
             {loading ? (
               <>

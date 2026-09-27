@@ -115,14 +115,16 @@ export default function Clients() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-text-primary">Clients</h2>
+          <h2 className="text-2xl heading-tighter text-text-primary">
+            Clients
+          </h2>
           <p className="text-sm text-text-muted mt-1">
             Manage your client relationships
           </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="btn-primary w-full sm:w-auto justify-center"
+          className="btn-primary w-full sm:w-auto"
         >
           <Plus size={16} strokeWidth={2} />
           New Client
@@ -171,11 +173,12 @@ export default function Clients() {
           />
         </div>
       ) : (
-        <div className="card p-0 divide-y divide-border">
-          {filteredClients.map((client) => (
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+          {filteredClients.map((client, index) => (
             <ClientRow
               key={client.id}
               client={client}
+              isLast={index === filteredClients.length - 1}
               onEdit={openEditModal}
               onDelete={handleDelete}
             />
@@ -272,7 +275,7 @@ export default function Clients() {
   );
 }
 
-function ClientRow({ client, onEdit, onDelete }) {
+function ClientRow({ client, isLast, onEdit, onDelete }) {
   const initials = (client.name || '?')
     .split(' ')
     .map((n) => n[0])
@@ -281,7 +284,11 @@ function ClientRow({ client, onEdit, onDelete }) {
     .toUpperCase();
 
   return (
-    <div className="p-4 hover:bg-bg-hover transition-colors">
+    <div
+      className={`p-4 hover:bg-bg-hover transition-colors group ${
+        !isLast ? 'border-b border-border' : ''
+      }`}
+    >
       <div className="flex items-center gap-3">
         <Link
           to={`/clients/${client.id}`}
@@ -301,7 +308,7 @@ function ClientRow({ client, onEdit, onDelete }) {
           </div>
         </Link>
 
-        {/* Desktop actions — hover only */}
+        {/* Desktop actions */}
         <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(client)}
@@ -312,7 +319,7 @@ function ClientRow({ client, onEdit, onDelete }) {
           </button>
           <button
             onClick={() => onDelete(client)}
-            className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
+            className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/5 transition-colors"
             title="Delete"
           >
             <Trash2 size={14} strokeWidth={1.75} />
@@ -320,7 +327,7 @@ function ClientRow({ client, onEdit, onDelete }) {
         </div>
       </div>
 
-      {/* Mobile actions row */}
+      {/* Mobile actions */}
       <div className="flex sm:hidden items-center gap-2 mt-3 pl-13">
         <button
           onClick={() => onEdit(client)}

@@ -8,10 +8,12 @@ import {
   Circle,
   Clock,
   Loader2,
+  Pencil,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { projectsApi } from '../api/projects';
 import { tasksApi } from '../api/tasks';
+import { clientsApi } from '../api/clients';
 import EmptyState from '../components/ui/EmptyState';
 import Modal from '../components/ui/Modal';
 import ShareButton from '../components/ui/ShareButton';
@@ -33,15 +35,25 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form, setForm] = useState({
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [taskForm, setTaskForm] = useState({
     title: '',
     description: '',
     status: 'todo',
     due_date: '',
+  });
+  const [editForm, setEditForm] = useState({
+    name: '',
+    client_id: '',
+    deadline: '',
+    description: '',
+    status: 'active',
+    progress: 0,
   });
 
   useEffect(() => {
@@ -59,11 +71,7 @@ export default function ProjectDetail() {
         const res = await projectsApi.get(id);
         projectData = res?.data?.id ? res.data : res;
       } catch (projErr) {
-        console.error(
-          'Project fetch failed:',
-          projErr.response?.status,
-          projErr.response?.data
-        );
+        console.error('Project fetch failed:', projErr.response?.status);
         setError(
           projErr.response?.status === 404
             ? 'Project not found. It may have been deleted.'
@@ -79,11 +87,19 @@ export default function ProjectDetail() {
         tasksData = Array.isArray(tRes) ? tRes : tRes?.data || [];
       } catch (taskErr) {
         console.error('Tasks fetch failed:', taskErr.response?.data);
-        tasksData = [];
+      }
+
+      let clientsData = [];
+      try {
+        const cRes = await clientsApi.list();
+        clientsData = Array.isArray(cRes) ? cRes : [];
+      } catch (cErr) {
+        console.error('Clients fetch failed:', cErr.response?.data);
       }
 
       setProject(projectData);
       setTasks(tasksData);
+      setClients(clientsData);
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('Something went wrong.');
@@ -92,18 +108,67 @@ export default function ProjectDetail() {
     }
   };
 
+  const openEditModal = () => {
+    setEditForm({
+      name: project.name || '',
+      client_id: project.client_id || '',
+      deadline: project.deadline
+        ? new Date(project.deadline).toISOString().split('T')[0]
+        : '',
+      description: project.description || '',
+      status: project.status || 'active',
+      progress: project.progress || 0,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const payload = {
+        ...editForm,
+        client_id: editForm.client_id || null,
+        deadline: editForm.deadline || null,
+      };
+      const updated = await projectsApi.update(project.id, payload);
+      setProject(updated);
+      setIsEditModalOpen(false);
+      toast.success('Project updated');
+    } catch (err) {
+      const errors = err.response?.data?.errors;
+      const message = errors
+        ? Object.values(errors)[0][0]
+        : err.response?.data?.message || 'Failed to update project';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Delete "${project.name}"? This cannot be undone.`)) return;
+    try {
+      await projectsApi.delete(project.id);
+      toast.success('Project deleted');
+      navigate('/projects');
+    } catch (err) {
+      toast.error('Failed to delete project');
+    }
+  };
+
   const handleAddTask = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
       const payload = {
-        ...form,
-        due_date: form.due_date || null,
+        ...taskForm,
+        due_date: taskForm.due_date || null,
       };
       const newTask = await tasksApi.create(id, payload);
       setTasks([...tasks, newTask]);
-      setForm({ title: '', description: '', status: 'todo', due_date: '' });
-      setIsModalOpen(false);
+      setTaskForm({ title: '', description: '', status: 'todo', due_date: '' });
+      setIsTaskModalOpen(false);
       toast.success('Task added');
     } catch (err) {
       console.error(err.response?.data);
@@ -153,10 +218,7 @@ export default function ProjectDetail() {
         <h2 className="text-lg font-semibold text-text-primary mb-2">
           {error || 'Project not found'}
         </h2>
-        <p className="text-sm text-text-muted mb-4">
-          Project ID: <code className="text-accent">{id}</code>
-        </p>
-        <Link to="/projects" className="btn-primary inline-flex">
+        <Link to="/projects" className="btn-primary mt-4 inline-flex">
           Back to Projects
         </Link>
       </div>
@@ -198,10 +260,25 @@ export default function ProjectDetail() {
               : '—'}
           </p>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+
+        <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+          <button
+            onClick={openEditModal}
+            className="btn-secondary flex-1 sm:flex-none justify-center"
+          >
+            <Pencil size={14} strokeWidth={2} />
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="btn-secondary flex-1 sm:flex-none justify-center text-danger hover:text-danger hover:bg-danger/5"
+          >
+            <Trash2 size={14} strokeWidth={2} />
+            Delete
+          </button>
           <ShareButton project={project} onUpdate={setProject} />
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsTaskModalOpen(true)}
             className="btn-primary flex-1 sm:flex-none justify-center"
           >
             <Plus size={16} strokeWidth={2} />
@@ -239,7 +316,7 @@ export default function ProjectDetail() {
             description="Break this project into small tasks to track progress."
             action={
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsTaskModalOpen(true)}
                 className="btn-primary"
               >
                 <Plus size={16} strokeWidth={2} />
@@ -288,7 +365,6 @@ export default function ProjectDetail() {
                   )}
                 </div>
 
-                {/* Delete — always visible on mobile, hover on desktop */}
                 <button
                   onClick={() => deleteTask(task.id)}
                   className="p-1.5 rounded-lg text-text-subtle hover:text-danger hover:bg-danger/10 transition-colors sm:opacity-0 sm:group-hover:opacity-100 flex-shrink-0"
@@ -304,8 +380,8 @@ export default function ProjectDetail() {
 
       {/* Add Task Modal */}
       <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
         title="Add Task"
       >
         <form onSubmit={handleAddTask} className="space-y-4">
@@ -313,8 +389,10 @@ export default function ProjectDetail() {
             <label className="label">Title *</label>
             <input
               type="text"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              value={taskForm.title}
+              onChange={(e) =>
+                setTaskForm({ ...taskForm, title: e.target.value })
+              }
               className="input"
               placeholder="Design homepage"
               required
@@ -325,9 +403,9 @@ export default function ProjectDetail() {
           <div>
             <label className="label">Description</label>
             <textarea
-              value={form.description}
+              value={taskForm.description}
               onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
+                setTaskForm({ ...taskForm, description: e.target.value })
               }
               className="input min-h-[80px] resize-none"
               placeholder="Optional details..."
@@ -338,8 +416,10 @@ export default function ProjectDetail() {
             <label className="label">Due Date</label>
             <input
               type="date"
-              value={form.due_date}
-              onChange={(e) => setForm({ ...form, due_date: e.target.value })}
+              value={taskForm.due_date}
+              onChange={(e) =>
+                setTaskForm({ ...taskForm, due_date: e.target.value })
+              }
               className="input"
             />
           </div>
@@ -347,7 +427,7 @@ export default function ProjectDetail() {
           <div className="flex gap-3 pt-2">
             <button
               type="button"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => setIsTaskModalOpen(false)}
               className="btn-secondary flex-1"
               disabled={submitting}
             >
@@ -359,6 +439,119 @@ export default function ProjectDetail() {
               disabled={submitting}
             >
               {submitting ? 'Adding...' : 'Add Task'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Project Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Edit Project"
+      >
+        <form onSubmit={handleEditSubmit} className="space-y-4">
+          <div>
+            <label className="label">Project Name *</label>
+            <input
+              type="text"
+              value={editForm.name}
+              onChange={(e) =>
+                setEditForm({ ...editForm, name: e.target.value })
+              }
+              className="input"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="label">Client</label>
+            <select
+              value={editForm.client_id}
+              onChange={(e) =>
+                setEditForm({ ...editForm, client_id: e.target.value })
+              }
+              className="input"
+            >
+              <option value="">— No client —</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="label">Status</label>
+            <select
+              value={editForm.status}
+              onChange={(e) =>
+                setEditForm({ ...editForm, status: e.target.value })
+              }
+              className="input"
+            >
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="on_hold">On Hold</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="label">Progress (%)</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={editForm.progress}
+              onChange={(e) =>
+                setEditForm({
+                  ...editForm,
+                  progress: parseInt(e.target.value) || 0,
+                })
+              }
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Deadline</label>
+            <input
+              type="date"
+              value={editForm.deadline}
+              onChange={(e) =>
+                setEditForm({ ...editForm, deadline: e.target.value })
+              }
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">Description</label>
+            <textarea
+              value={editForm.description}
+              onChange={(e) =>
+                setEditForm({ ...editForm, description: e.target.value })
+              }
+              className="input min-h-[80px] resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(false)}
+              className="btn-secondary flex-1"
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary flex-1"
+              disabled={submitting}
+            >
+              {submitting ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

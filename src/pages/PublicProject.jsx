@@ -80,7 +80,7 @@ export default function PublicProject() {
             {error || 'This project link is invalid or has been disabled.'}
           </p>
           <Link to="/" className="btn-primary inline-flex">
-            Go to ClientHub
+            Go to Klient
           </Link>
         </div>
       </div>
@@ -102,17 +102,17 @@ export default function PublicProject() {
         <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-white font-semibold text-xs">C</span>
+              <span className="text-white font-semibold text-xs">K</span>
             </div>
             <span className="text-sm font-semibold text-text-primary">
-              ClientHub
+              Klient
             </span>
           </div>
           <Link
             to="/register"
             className="text-xs text-text-muted hover:text-text-primary transition-colors"
           >
-            Powered by ClientHub
+            Powered by Klient
           </Link>
         </div>
       </header>
@@ -249,7 +249,7 @@ export default function PublicProject() {
             to="/register"
             className="text-xs text-accent hover:text-accent-hover font-medium mt-1 inline-block"
           >
-            Get started with ClientHub →
+            Get started with Klient Ã¢â€ â€™
           </Link>
         </div>
       </main>

@@ -25,10 +25,9 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Mobile backdrop */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
           onClick={onClose}
         />
       )}
@@ -43,14 +42,14 @@ export default function Sidebar({ isOpen, onClose }) {
           lg:translate-x-0
         `}
       >
-        {/* Logo + Close (mobile) */}
-        <div className="h-15 flex items-center justify-between gap-2 px-5 border-b border-border">
+        {/* Logo */}
+        <div className="h-16 flex items-center justify-between gap-2 px-5 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-white font-semibold text-xs">C</span>
+            <div className="w-7 h-7 rounded-lg bg-text-primary flex items-center justify-center">
+              <span className="text-bg-base font-semibold text-xs">K</span>
             </div>
-            <span className="text-sm font-semibold text-text-primary">
-              ClientHub
+            <span className="text-sm font-semibold heading-tight">
+              Klient
             </span>
           </div>
           <button
@@ -62,22 +61,29 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                `relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive
                     ? 'bg-accent-subtle text-accent'
                     : 'text-text-muted hover:text-text-primary hover:bg-bg-hover'
                 }`
               }
             >
-              <item.icon size={18} strokeWidth={1.75} />
-              <span>{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-accent rounded-r-full" />
+                  )}
+                  <item.icon size={18} strokeWidth={1.75} />
+                  <span>{item.label}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -85,7 +91,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* User */}
         <div className="p-3 border-t border-border">
           <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-8 h-8 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-xs font-semibold">
+            <div className="w-8 h-8 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-xs font-semibold flex-shrink-0">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">

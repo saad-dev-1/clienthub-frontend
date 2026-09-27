@@ -7,26 +7,50 @@ import {
   CheckCircle2,
   ArrowRight,
   Sparkles,
+  Users,
+  Shield,
+  Zap,
 } from 'lucide-react';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-bg-base text-text-primary">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 backdrop-blur-xl bg-bg-base/70">
+      {/* ============ NAV ============ */}
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg-base/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-white font-semibold text-xs">C</span>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-text-primary flex items-center justify-center">
+              <span className="text-bg-base font-semibold text-xs">K</span>
             </div>
-            <span className="text-sm font-semibold">ClientHub</span>
-          </div>
+            <span className="text-sm font-semibold heading-tight">Klient</span>
+          </Link>
+
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-text-muted hover:text-text-primary transition-colors">Features</a>
-            <a href="#pricing" className="text-sm text-text-muted hover:text-text-primary transition-colors">Pricing</a>
+            <a
+              href="#features"
+              className="text-sm text-text-muted hover:text-text-primary transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#how"
+              className="text-sm text-text-muted hover:text-text-primary transition-colors"
+            >
+              How it works
+            </a>
+            <a
+              href="#pricing"
+              className="text-sm text-text-muted hover:text-text-primary transition-colors"
+            >
+              Pricing
+            </a>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/login" className="text-sm text-text-muted hover:text-text-primary transition-colors px-3 py-1.5">
+
+          <div className="flex items-center gap-2">
+            <Link
+              to="/login"
+              className="text-sm text-text-muted hover:text-text-primary transition-colors px-3 py-1.5"
+            >
               Sign in
             </Link>
             <Link to="/register" className="btn-primary text-sm">
@@ -36,69 +60,179 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-medium mb-6">
-            <Sparkles size={12} strokeWidth={2} />
-            <span>Now with public share links</span>
-          </div>
+      {/* ============ HERO ============ */}
+      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+        {/* Radial glow */}
+        <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full opacity-[0.15]"
+            style={{
+              background:
+                'radial-gradient(circle, rgba(109,40,217,0.6) 0%, transparent 70%)',
+              filter: 'blur(100px)',
+            }}
+          />
+        </div>
 
-          <h1 className="text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.1]">
-            Send one link.
-            <br />
-            <span className="text-text-muted">Your client sees everything.</span>
-          </h1>
+        {/* Subtle grid pattern */}
+        <div
+          className="absolute inset-0 -z-10 opacity-[0.15] pointer-events-none"
+          style={{
+            backgroundImage: `linear-gradient(rgb(var(--border)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--border)) 1px, transparent 1px)`,
+            backgroundSize: '64px 64px',
+            maskImage:
+              'radial-gradient(ellipse 80% 50% at 50% 0%, black 40%, transparent 80%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 80% 50% at 50% 0%, black 40%, transparent 80%)',
+          }}
+        />
 
-          <p className="text-base md:text-lg text-text-muted max-w-2xl mx-auto mb-8 leading-relaxed">
-            ClientHub is the project management tool built for freelancers.
-            No client logins. No email chains. Just a clean link that shows
-            project status, files, and invoices.
-          </p>
-
-          <div className="flex items-center justify-center gap-3 mb-16">
-            <Link to="/register" className="btn-primary px-5 py-2.5 text-sm">
-              Start for free
-              <ArrowRight size={16} strokeWidth={2} />
-            </Link>
-            <a href="#features" className="btn-secondary px-5 py-2.5 text-sm">
-              See how it works
-            </a>
-          </div>
-
-          {/* Dashboard Preview */}
-          <div className="relative max-w-3xl mx-auto">
-            <div className="absolute inset-0 bg-accent/20 blur-3xl -z-10" />
-            <div className="border border-border rounded-xl overflow-hidden shadow-2xl bg-bg-card">
-              {/* Fake browser bar */}
-              <div className="h-8 border-b border-border bg-bg-hover flex items-center gap-1.5 px-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-danger/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-warning/50" />
-                <div className="w-2.5 h-2.5 rounded-full bg-success/50" />
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-12 gap-12 items-center">
+            {/* Left — Text */}
+            <div className="md:col-span-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-6">
+                <Sparkles size={12} strokeWidth={2} className="text-accent" />
+                <span>Public share links — built in</span>
               </div>
-              {/* Dashboard mockup */}
-              <div className="flex h-72">
-                <div className="w-40 border-r border-border p-3 space-y-1">
-                  {['Dashboard', 'Clients', 'Projects', 'Invoices'].map((item, i) => (
-                    <div key={item} className={`text-xs px-2 py-1.5 rounded-md ${i === 0 ? 'bg-accent-subtle text-accent' : 'text-text-muted'}`}>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex-1 p-4 space-y-3">
-                  <div className="text-sm font-semibold">Good morning, Saad</div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {['Projects', 'Clients', 'Revenue'].map((stat) => (
-                      <div key={stat} className="border border-border rounded-lg p-2.5">
-                        <div className="text-[10px] text-text-subtle uppercase tracking-wide">{stat}</div>
-                        <div className="text-lg font-semibold mt-1">12</div>
+
+              <h1 className="text-5xl md:text-6xl heading-tightest mb-6 leading-[1.05]">
+                The client portal,
+                <br />
+                <span className="text-text-muted">
+                  built for freelancers.
+                </span>
+              </h1>
+
+              <p className="text-lg text-text-body mb-8 leading-relaxed max-w-lg">
+                Turn projects, files, and invoices into one clean, shareable
+                link. Your client opens it — no login, no emails, no chaos.
+              </p>
+
+              <div className="flex items-center gap-3 mb-6">
+                <Link
+                  to="/register"
+                  className="btn-primary px-5 py-2.5 text-sm"
+                >
+                  Start for free
+                  <ArrowRight size={16} strokeWidth={2} />
+                </Link>
+                <a
+                  href="#how"
+                  className="btn-secondary px-5 py-2.5 text-sm"
+                >
+                  See how it works
+                </a>
+              </div>
+
+              <p className="text-xs text-text-subtle">
+                No credit card required · Free forever
+              </p>
+            </div>
+
+            {/* Right — Product Mockup */}
+            <div className="md:col-span-6">
+              <div className="relative">
+                {/* Glow behind mockup */}
+                <div
+                  className="absolute -inset-8 -z-10 rounded-full opacity-40"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(109,40,217,0.4) 0%, transparent 70%)',
+                    filter: 'blur(60px)',
+                  }}
+                />
+
+                {/* Browser frame */}
+                <div className="rounded-2xl border border-border bg-bg-card overflow-hidden shadow-modal">
+                  <div className="h-9 border-b border-border bg-bg-hover flex items-center gap-1.5 px-4">
+                    <div className="w-2.5 h-2.5 rounded-full bg-danger/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-warning/40" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-success/40" />
+                    <div className="flex-1 mx-3">
+                      <div className="h-5 max-w-xs mx-auto bg-bg-base rounded flex items-center justify-center">
+                        <span className="text-[10px] text-text-subtle">
+                          klient.app/dashboard
+                        </span>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                  <div className="border border-border rounded-lg p-3">
-                    <div className="text-xs font-medium mb-2">Nexus Store</div>
-                    <div className="h-1 bg-bg-hover rounded-full overflow-hidden">
-                      <div className="h-full bg-accent w-3/4" />
+
+                  <div className="flex h-80">
+                    <div className="w-32 border-r border-border p-3 space-y-0.5 bg-bg-base/50">
+                      <div className="flex items-center gap-2 px-2 py-1.5 mb-3">
+                        <div className="w-5 h-5 rounded bg-text-primary flex items-center justify-center">
+                          <span className="text-bg-base font-semibold text-[8px]">
+                            K
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-semibold">
+                          Klient
+                        </span>
+                      </div>
+                      {[
+                        'Dashboard',
+                        'Clients',
+                        'Projects',
+                        'Invoices',
+                        'Settings',
+                      ].map((item, i) => (
+                        <div
+                          key={item}
+                          className={`text-[10px] px-2 py-1.5 rounded-md ${
+                            i === 0
+                              ? 'bg-accent-subtle text-accent font-medium'
+                              : 'text-text-muted'
+                          }`}
+                        >
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex-1 p-4 space-y-4">
+                      <div>
+                        <div className="text-sm font-semibold heading-tight mb-0.5">
+                          Good morning, Saad 👋
+                        </div>
+                        <div className="text-[10px] text-text-subtle">
+                          Here's what's happening today.
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { label: 'PROJECTS', value: '8' },
+                          { label: 'CLIENTS', value: '12' },
+                          { label: 'REVENUE', value: '$8.4K' },
+                        ].map((stat) => (
+                          <div
+                            key={stat.label}
+                            className="border border-border rounded-lg p-2.5 bg-bg-card"
+                          >
+                            <div className="text-[9px] text-text-subtle uppercase tracking-wider">
+                              {stat.label}
+                            </div>
+                            <div className="text-base font-semibold tabular-nums mt-0.5">
+                              {stat.value}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="border border-border rounded-lg p-3 bg-bg-card">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-[11px] font-medium">
+                            Nexus Store
+                          </div>
+                          <div className="text-[9px] text-text-subtle tabular-nums">
+                            75%
+                          </div>
+                        </div>
+                        <div className="h-1 bg-bg-hover rounded-full overflow-hidden">
+                          <div className="h-full bg-accent w-3/4 rounded-full" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -108,45 +242,227 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-24 px-6 border-t border-border">
+      {/* ============ TRUST STRIP ============ */}
+      <section className="border-y border-border bg-bg-card/30">
+        <div className="max-w-6xl mx-auto px-6 py-10">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm text-text-muted">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <span>No signup for clients</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <span>Setup in 60 seconds</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <span>Free forever plan</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <span>Cancel anytime</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ HOW IT WORKS ============ */}
+      <section id="how" className="py-28 px-6 relative">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
-              Everything you need
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-5">
+              <Zap size={12} strokeWidth={2} className="text-accent" />
+              <span>How it works</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+              From zero to shareable in minutes
             </h2>
-            <p className="text-text-muted max-w-xl mx-auto">
-              Simple enough to start today. Powerful enough to run your business.
+            <p className="text-text-body text-lg">
+              Three simple steps. No tutorials needed.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: FolderKanban, title: 'Projects', desc: 'Track every project, deadline, and progress in one clean view.' },
-              { icon: Link2, title: 'Share Links', desc: 'Send clients a link. No login needed. Ever.' },
-              { icon: FileText, title: 'Invoices', desc: 'Create, send, and mark paid. PDF export included.' },
-              { icon: BarChart3, title: 'Insights', desc: 'See revenue, active projects, and what needs attention.' },
-            ].map((f) => (
-              <div key={f.title} className="card hover:border-border-strong transition-colors">
-                <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center mb-4">
-                  <f.icon size={18} strokeWidth={1.75} className="text-accent" />
+              {
+                num: '01',
+                title: 'Create your project',
+                desc: 'Add project details, assign a client, set a deadline. Takes 30 seconds.',
+              },
+              {
+                num: '02',
+                title: 'Add tasks & files',
+                desc: 'Break work into tasks. Attach files. Track progress in real-time.',
+              },
+              {
+                num: '03',
+                title: 'Share the link',
+                desc: 'One click generates a public link. Send to client. Done.',
+              },
+            ].map((step) => (
+              <div key={step.num} className="card card-hover p-6">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border bg-bg-base text-sm font-semibold text-text-primary mb-5 tabular-nums">
+                  {step.num}
                 </div>
-                <h3 className="text-sm font-semibold mb-1.5">{f.title}</h3>
-                <p className="text-sm text-text-muted leading-relaxed">{f.desc}</p>
+                <h3 className="text-lg font-semibold heading-tight mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-text-body leading-relaxed">
+                  {step.desc}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-24 px-6 border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">
-              Simple pricing
+      {/* ============ FEATURES ============ */}
+      <section
+        id="features"
+        className="py-28 px-6 border-t border-border bg-bg-card/30 relative overflow-hidden"
+      >
+        <div
+          className="absolute top-0 right-0 w-[600px] h-[600px] -z-10 opacity-[0.08] pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(circle, rgba(109,40,217,1) 0%, transparent 70%)',
+            filter: 'blur(100px)',
+          }}
+        />
+
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-5">
+              <span>Features</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+              Everything you need. Nothing you don't.
             </h2>
-            <p className="text-text-muted">
+            <p className="text-text-body text-lg">
+              Simple enough to start today. Powerful enough to run your
+              business.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+            <div className="md:col-span-4 card card-hover p-6">
+              <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
+                <Link2 size={20} strokeWidth={1.75} className="text-accent" />
+              </div>
+              <h3 className="text-xl font-semibold heading-tight mb-2">
+                Public share links
+              </h3>
+              <p className="text-sm text-text-body leading-relaxed mb-6 max-w-lg">
+                Send your client a link. They see progress, tasks, and files —
+                no account required. The simplest client portal ever made.
+              </p>
+
+              <div className="rounded-lg border border-border bg-bg-base p-3 flex items-center gap-3">
+                <div className="flex-1 truncate">
+                  <div className="text-[10px] text-text-subtle uppercase tracking-wider mb-0.5">
+                    Share link
+                  </div>
+                  <div className="text-xs text-text-primary font-mono truncate">
+                    klient.app/p/nexus-store-x7k2
+                  </div>
+                </div>
+                <button className="btn-primary px-3 py-1.5 text-xs flex-shrink-0">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <div className="md:col-span-2 card card-hover p-6">
+              <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
+                <FolderKanban
+                  size={20}
+                  strokeWidth={1.75}
+                  className="text-accent"
+                />
+              </div>
+              <h3 className="text-lg font-semibold heading-tight mb-2">
+                Projects
+              </h3>
+              <p className="text-sm text-text-body leading-relaxed">
+                Track every project, deadline, and progress in one clean view.
+              </p>
+            </div>
+
+            <div className="md:col-span-2 card card-hover p-6">
+              <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
+                <FileText
+                  size={20}
+                  strokeWidth={1.75}
+                  className="text-accent"
+                />
+              </div>
+              <h3 className="text-lg font-semibold heading-tight mb-2">
+                Invoices
+              </h3>
+              <p className="text-sm text-text-body leading-relaxed">
+                Create, send, and mark paid. Professional PDF export included.
+              </p>
+            </div>
+
+            <div className="md:col-span-4 card card-hover p-6">
+              <div className="flex items-start gap-5">
+                <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
+                  <BarChart3
+                    size={20}
+                    strokeWidth={1.75}
+                    className="text-accent"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold heading-tight mb-2">
+                    Insights & analytics
+                  </h3>
+                  <p className="text-sm text-text-body leading-relaxed">
+                    See revenue, active projects, and what needs attention. All
+                    in one dashboard.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="md:col-span-3 card card-hover p-6">
+              <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
+                <Users size={20} strokeWidth={1.75} className="text-accent" />
+              </div>
+              <h3 className="text-lg font-semibold heading-tight mb-2">
+                Built for freelancers
+              </h3>
+              <p className="text-sm text-text-body leading-relaxed">
+                No team onboarding. No client training. Just you and your work.
+              </p>
+            </div>
+
+            <div className="md:col-span-3 card card-hover p-6">
+              <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
+                <Shield size={20} strokeWidth={1.75} className="text-accent" />
+              </div>
+              <h3 className="text-lg font-semibold heading-tight mb-2">
+                Secure by default
+              </h3>
+              <p className="text-sm text-text-body leading-relaxed">
+                Your data is encrypted, private, and yours. Always.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PRICING ============ */}
+      <section id="pricing" className="py-28 px-6 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-5">
+              <span>Pricing</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+              Simple, honest pricing
+            </h2>
+            <p className="text-text-body text-lg">
               Start free. Upgrade when you need more.
             </p>
           </div>
@@ -165,7 +481,13 @@ export default function Home() {
                 name: 'Pro',
                 price: '$12',
                 desc: 'For active freelancers',
-                features: ['Unlimited projects', 'Unlimited clients', 'Invoices + PDF', 'Share links', 'Analytics'],
+                features: [
+                  'Unlimited projects',
+                  'Unlimited clients',
+                  'Invoices + PDF',
+                  'Public share links',
+                  'Analytics',
+                ],
                 cta: 'Start 14-day trial',
                 featured: true,
               },
@@ -173,24 +495,35 @@ export default function Home() {
                 name: 'Agency',
                 price: '$29',
                 desc: 'For small teams',
-                features: ['Everything in Pro', 'Team members', 'Priority support', 'Custom branding'],
+                features: [
+                  'Everything in Pro',
+                  'Team members',
+                  'Priority support',
+                  'Custom branding',
+                ],
                 cta: 'Contact us',
                 featured: false,
               },
             ].map((plan) => (
               <div
                 key={plan.name}
-                className={`card relative ${plan.featured ? 'border-accent' : ''}`}
+                className={`card relative ${
+                  plan.featured ? 'border-text-primary' : ''
+                }`}
               >
                 {plan.featured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 badge-accent">
-                    Most popular
+                  <div className="absolute -top-3 left-6">
+                    <div className="px-2.5 py-1 rounded-md bg-text-primary text-bg-base text-[10px] font-semibold uppercase tracking-wider">
+                      Most popular
+                    </div>
                   </div>
                 )}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold mb-1">{plan.name}</h3>
+                  <h3 className="text-sm font-semibold mb-2">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-2">
-                    <span className="text-3xl font-semibold tracking-tight">{plan.price}</span>
+                    <span className="text-4xl font-semibold heading-tighter tabular-nums">
+                      {plan.price}
+                    </span>
                     <span className="text-sm text-text-muted">/mo</span>
                   </div>
                   <p className="text-xs text-text-muted">{plan.desc}</p>
@@ -198,8 +531,15 @@ export default function Home() {
 
                 <ul className="space-y-2.5 mb-6">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-text-muted">
-                      <CheckCircle2 size={14} strokeWidth={2} className="text-accent mt-0.5 flex-shrink-0" />
+                    <li
+                      key={f}
+                      className="flex items-start gap-2 text-sm text-text-body"
+                    >
+                      <CheckCircle2
+                        size={14}
+                        strokeWidth={2}
+                        className="text-success mt-0.5 flex-shrink-0"
+                      />
                       <span>{f}</span>
                     </li>
                   ))}
@@ -207,7 +547,11 @@ export default function Home() {
 
                 <Link
                   to="/register"
-                  className={plan.featured ? 'btn-primary w-full' : 'btn-secondary w-full'}
+                  className={
+                    plan.featured
+                      ? 'btn-primary w-full justify-center'
+                      : 'btn-secondary w-full justify-center'
+                  }
                 >
                   {plan.cta}
                 </Link>
@@ -217,38 +561,145 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 px-6 border-t border-border">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
-            Ready to simplify your workflow?
-          </h2>
-          <p className="text-text-muted mb-8">
-            Join freelancers who stopped chasing clients for updates.
-          </p>
-          <Link to="/register" className="btn-primary px-5 py-2.5 text-sm">
-            Get started free
-            <ArrowRight size={16} strokeWidth={2} />
-          </Link>
+      {/* ============ FINAL CTA ============ */}
+      <section className="py-28 px-6 border-t border-border relative overflow-hidden">
+        <div
+          className="absolute inset-0 -z-10 opacity-[0.08] pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(circle at 50% 100%, rgba(109,40,217,1) 0%, transparent 60%)',
+            filter: 'blur(80px)',
+          }}
+        />
+
+        <div className="max-w-4xl mx-auto">
+          <div className="rounded-2xl border border-border bg-bg-card p-12 text-center relative overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-[0.04]"
+              style={{
+                backgroundImage: `linear-gradient(rgb(var(--text-primary)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--text-primary)) 1px, transparent 1px)`,
+                backgroundSize: '40px 40px',
+              }}
+            />
+
+            <div className="relative">
+              <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+                Start shipping work today
+              </h2>
+              <p className="text-text-body text-lg mb-8 max-w-lg mx-auto">
+                Stop chasing clients for updates. Send one link. Done.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <Link
+                  to="/register"
+                  className="btn-primary px-5 py-2.5 text-sm"
+                >
+                  Get started free
+                  <ArrowRight size={16} strokeWidth={2} />
+                </Link>
+              </div>
+              <p className="text-xs text-text-subtle mt-4">
+                No credit card required
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-10 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-accent flex items-center justify-center">
-              <span className="text-white font-semibold text-[10px]">C</span>
+      {/* ============ FOOTER ============ */}
+      <footer className="border-t border-border py-12 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-5 gap-8 mb-10">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-md bg-text-primary flex items-center justify-center">
+                  <span className="text-bg-base font-semibold text-[10px]">
+                    K
+                  </span>
+                </div>
+                <span className="text-sm font-semibold heading-tight">
+                  Klient
+                </span>
+              </div>
+              <p className="text-xs text-text-muted leading-relaxed max-w-xs">
+                Where your clients live. Built for freelancers who value their
+                time.
+              </p>
+              <p className="text-xs text-text-subtle mt-4">
+                Made in Pakistan 🇵🇰
+              </p>
             </div>
-            <span className="text-xs text-text-muted">
-              © 2026 ClientHub. All rights reserved.
-            </span>
+
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-text-primary mb-3">
+                Product
+              </h4>
+              <ul className="space-y-2">
+                {['Features', 'Pricing', 'Changelog'].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="#"
+                      className="text-xs text-text-muted hover:text-text-primary transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-text-primary mb-3">
+                Company
+              </h4>
+              <ul className="space-y-2">
+                {['About', 'Blog', 'Contact'].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="#"
+                      className="text-xs text-text-muted hover:text-text-primary transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-text-primary mb-3">
+                Legal
+              </h4>
+              <ul className="space-y-2">
+                {['Privacy', 'Terms', 'Security'].map((item) => (
+                  <li key={item}>
+                    <a
+                      href="#"
+                      className="text-xs text-text-muted hover:text-text-primary transition-colors"
+                    >
+                      {item}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div className="flex items-center gap-6 text-xs text-text-muted">
-            <a href="#" className="hover:text-text-primary transition-colors">Privacy</a>
-            <a href="#" className="hover:text-text-primary transition-colors">Terms</a>
-            <a href="#" className="hover:text-text-primary transition-colors">Twitter</a>
-            <a href="#" className="hover:text-text-primary transition-colors">GitHub</a>
+
+          <div className="pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-text-subtle">
+              © 2026 Klient. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-xs text-text-muted">
+              <a href="#" className="hover:text-text-primary transition-colors">
+                Twitter
+              </a>
+              <a href="#" className="hover:text-text-primary transition-colors">
+                GitHub
+              </a>
+              <a href="#" className="hover:text-text-primary transition-colors">
+                LinkedIn
+              </a>
+            </div>
           </div>
         </div>
       </footer>

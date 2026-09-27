@@ -147,7 +147,7 @@ export default function Projects() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-text-primary">
+          <h2 className="text-2xl heading-tighter text-text-primary">
             Projects
           </h2>
           <p className="text-sm text-text-muted mt-1">
@@ -156,7 +156,7 @@ export default function Projects() {
         </div>
         <button
           onClick={openCreateModal}
-          className="btn-primary w-full sm:w-auto justify-center"
+          className="btn-primary w-full sm:w-auto"
         >
           <Plus size={16} strokeWidth={2} />
           New Project
@@ -205,7 +205,7 @@ export default function Projects() {
           />
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((project) => (
             <ProjectCard
               key={project.id}
@@ -348,66 +348,60 @@ export default function Projects() {
 
 function ProjectCard({ project, onEdit, onDelete }) {
   return (
-    <div className="card hover:border-border-strong transition-colors group relative">
+    <div className="card card-hover group relative">
       <Link
         to={`/projects/${project.id}`}
-        className="block cursor-pointer pr-16 sm:pr-0"
+        className="block cursor-pointer pr-16"
       >
-        <div className="flex items-start justify-between gap-2 mb-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <h3 className="text-sm font-semibold text-text-primary truncate">
-                {project.name}
-              </h3>
-              <span
-                className={`${
-                  statusStyles[project.status] || 'badge-neutral'
-                } flex-shrink-0`}
-              >
-                {(project.status || 'active').replace('_', ' ')}
-              </span>
-            </div>
-            <p className="text-xs text-text-muted truncate">
-              {project.client?.name || 'No client'} • Due{' '}
-              {project.deadline
-                ? new Date(project.deadline).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })
-                : '—'}
-            </p>
-          </div>
+        <div className="flex items-center gap-2 mb-3">
+          <h3 className="text-base font-semibold heading-tight text-text-primary truncate flex-1">
+            {project.name}
+          </h3>
+          <span
+            className={`${
+              statusStyles[project.status] || 'badge-neutral'
+            } flex-shrink-0`}
+          >
+            {(project.status || 'active').replace('_', ' ')}
+          </span>
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-text-subtle">Progress</span>
-            <span className="text-xs font-medium text-text-primary tabular-nums">
-              {project.progress || 0}%
-            </span>
-          </div>
-          <div className="h-1.5 bg-bg-hover rounded-full overflow-hidden">
-            <div
-              className="h-full bg-accent transition-all duration-300"
-              style={{ width: `${project.progress || 0}%` }}
-            />
-          </div>
+        <p className="text-xs text-text-muted mb-4 truncate">
+          {project.client?.name || 'No client'} • Due{' '}
+          {project.deadline
+            ? new Date(project.deadline).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })
+            : '—'}
+        </p>
+
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-text-subtle">Progress</span>
+          <span className="text-xs font-medium text-text-primary tabular-nums">
+            {project.progress || 0}%
+          </span>
+        </div>
+        <div className="h-1.5 bg-bg-hover rounded-full overflow-hidden">
+          <div
+            className="h-full bg-accent transition-all duration-500 rounded-full"
+            style={{ width: `${project.progress || 0}%` }}
+          />
         </div>
       </Link>
 
-      {/* Action buttons — always visible on mobile, hover on desktop */}
-      <div className="absolute top-4 right-4 flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-5 right-5 flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <button
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             onEdit(project);
           }}
-          className="p-1.5 rounded-lg bg-bg-card border border-border text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+          className="p-1.5 rounded-lg bg-bg-card border border-border text-text-muted hover:text-text-primary hover:border-border-strong transition-colors"
           title="Edit"
         >
-          <Pencil size={14} strokeWidth={1.75} />
+          <Pencil size={13} strokeWidth={1.75} />
         </button>
         <button
           onClick={(e) => {
@@ -415,10 +409,10 @@ function ProjectCard({ project, onEdit, onDelete }) {
             e.stopPropagation();
             onDelete(project);
           }}
-          className="p-1.5 rounded-lg bg-bg-card border border-border text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
+          className="p-1.5 rounded-lg bg-bg-card border border-border text-text-muted hover:text-danger hover:border-danger/30 hover:bg-danger/5 transition-colors"
           title="Delete"
         >
-          <Trash2 size={14} strokeWidth={1.75} />
+          <Trash2 size={13} strokeWidth={1.75} />
         </button>
       </div>
     </div>

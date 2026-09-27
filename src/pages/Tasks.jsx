@@ -89,7 +89,7 @@ export default function Tasks() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-text-primary">Tasks</h2>
+        <h2 className="text-2xl heading-tighter text-text-primary">Tasks</h2>
         <p className="text-sm text-text-muted mt-1">
           All tasks across your projects
         </p>
@@ -117,14 +117,18 @@ export default function Tasks() {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap flex-shrink-0 ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap flex-shrink-0 border ${
               filter === f.key
-                ? 'bg-accent-subtle text-accent'
-                : 'text-text-muted hover:text-text-primary hover:bg-bg-hover'
+                ? 'bg-text-primary text-bg-base border-text-primary'
+                : 'text-text-muted border-border hover:text-text-primary hover:border-border-strong bg-bg-card'
             }`}
           >
             {f.label}
-            <span className="ml-1.5 text-text-subtle tabular-nums">
+            <span
+              className={`ml-1.5 tabular-nums ${
+                filter === f.key ? 'text-bg-base/70' : 'text-text-subtle'
+              }`}
+            >
               {counts[f.key]}
             </span>
           </button>
@@ -151,13 +155,17 @@ export default function Tasks() {
           />
         </div>
       ) : (
-        <div className="card p-0 divide-y divide-border">
-          {filtered.map((task) => {
+        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
+          {filtered.map((task, index) => {
             const Icon = statusIcon[task.status] || Circle;
             return (
               <div
                 key={task.id}
-                className="flex items-start gap-3 p-4 hover:bg-bg-hover transition-colors"
+                className={`flex items-start gap-3 p-4 hover:bg-bg-hover transition-colors ${
+                  index !== filtered.length - 1
+                    ? 'border-b border-border'
+                    : ''
+                }`}
               >
                 <button
                   onClick={() => toggleStatus(task)}
@@ -203,7 +211,7 @@ export default function Tasks() {
                     )}
                   </div>
 
-                  {/* Status badge — visible on mobile below */}
+                  {/* Status badge — mobile only */}
                   <div className="sm:hidden mt-2">
                     <span
                       className={
@@ -219,7 +227,6 @@ export default function Tasks() {
                   </div>
                 </div>
 
-                {/* Status badge — desktop right side */}
                 <span
                   className={`hidden sm:inline-flex flex-shrink-0 ${
                     task.status === 'done'

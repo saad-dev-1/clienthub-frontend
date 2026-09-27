@@ -7,9 +7,13 @@ import {
   FolderKanban,
   Loader2,
   Calendar,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { clientsApi } from '../api/clients';
 import EmptyState from '../components/ui/EmptyState';
+import Modal from '../components/ui/Modal';
 
 const statusStyles = {
   active: 'badge-accent',
@@ -23,6 +27,14 @@ export default function ClientDetail() {
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    company: '',
+    phone: '',
+  });
 
   useEffect(() => {
     fetchClient();
@@ -44,6 +56,46 @@ export default function ClientDetail() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openEditModal = () => {
+    setForm({
+      name: client.name || '',
+      email: client.email || '',
+      company: client.company || '',
+      phone: client.phone || '',
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const updated = await clientsApi.update(client.id, form);
+      setClient({ ...client, ...updated });
+      setIsEditModalOpen(false);
+      toast.success('Client updated');
+    } catch (err) {
+      const errors = err.response?.data?.errors;
+      const message = errors
+        ? Object.values(errors)[0][0]
+        : err.response?.data?.message || 'Failed to update client';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Delete "${client.name}"? This cannot be undone.`)) return;
+    try {
+      await clientsApi.delete(client.id);
+      toast.success('Client deleted');
+      navigate('/clients');
+    } catch (err) {
+      toast.error('Failed to delete client');
     }
   };
 
@@ -89,19 +141,38 @@ export default function ClientDetail() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-start gap-3 sm:gap-4 mb-8">
-        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-sm sm:text-lg font-semibold flex-shrink-0">
-          {initials}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-sm sm:text-lg font-semibold flex-shrink-0">
+            {initials}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl sm:text-2xl font-semibold text-text-primary mb-1 truncate">
+              {client.name}
+            </h2>
+            {client.company && (
+              <p className="text-sm text-text-muted truncate">
+                {client.company}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <h2 className="text-xl sm:text-2xl font-semibold text-text-primary mb-1 truncate">
-            {client.name}
-          </h2>
-          {client.company && (
-            <p className="text-sm text-text-muted truncate">
-              {client.company}
-            </p>
-          )}
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            onClick={openEditModal}
+            className="btn-secondary flex-1 sm:flex-none justify-center"
+          >
+            <Pencil size={14} strokeWidth={2} />
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="btn-secondary flex-1 sm:flex-none justify-center text-danger hover:text-danger hover:bg-danger/5"
+          >
+            <Trash2 size={14} strokeWidth={2} />
+            Delete
+          </button>
         </div>
       </div>
 
@@ -209,6 +280,70 @@ export default function ClientDetail() {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Edit Client"
+      >
+        <form onSubmit={handleEditSubmit} className="space-y-4">
+          <div>
+            <label className="label">Name *</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="input"
+              required
+            />
+          </div>
+          <div>
+            <label className="label">Email</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="label">Company</label>
+            <input
+              type="text"
+              value={form.company}
+              onChange={(e) => setForm({ ...form, company: e.target.value })}
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="label">Phone</label>
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              className="input"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(false)}
+              className="btn-secondary flex-1"
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary flex-1"
+              disabled={submitting}
+            >
+              {submitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
