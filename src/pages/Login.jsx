@@ -18,9 +18,10 @@ export default function Login() {
       toast.success('Welcome back!');
       navigate('/dashboard');
     } catch (err) {
-      const message = err.response?.data?.message 
-        || err.response?.data?.errors?.email?.[0]
-        || 'Login failed. Please try again.';
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.email?.[0] ||
+        'Login failed. Please try again.';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -35,7 +36,9 @@ export default function Login() {
           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
             <span className="text-white font-semibold text-sm">C</span>
           </div>
-          <span className="text-lg font-semibold text-text-primary">ClientHub</span>
+          <span className="text-lg font-semibold text-text-primary">
+            ClientHub
+          </span>
         </div>
 
         {/* Card */}
@@ -51,7 +54,9 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="label">Email</label>
+              <label htmlFor="email" className="label">
+                Email
+              </label>
               <input
                 id="email"
                 type="email"
@@ -65,7 +70,17 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="label">Password</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="password" className="label mb-0">
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-accent hover:text-accent-hover transition-colors"
+                >
+                  Forgot?
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"
@@ -81,7 +96,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full"
+              className="btn-primary w-full justify-center"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
@@ -89,8 +104,8 @@ export default function Login() {
 
           <p className="text-sm text-text-muted text-center mt-6">
             Don't have an account?{' '}
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="text-accent hover:text-accent-hover font-medium transition-colors"
             >
               Sign up

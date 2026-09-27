@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import ClientDetail from './pages/ClientDetail';
@@ -20,6 +22,8 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/p/:token" element={<PublicProject />} />
 
       <Route element={<AppLayout title="Dashboard" />}>
@@ -47,7 +51,6 @@ export default function App() {
         <Route path="/settings" element={<Settings />} />
       </Route>
 
-      {/* 404 — Catch all */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
