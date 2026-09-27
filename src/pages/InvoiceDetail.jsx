@@ -96,7 +96,7 @@ export default function InvoiceDetail() {
 
   if (error || !invoice) {
     return (
-      <div className="text-center py-16">
+      <div className="text-center py-16 px-4">
         <div className="w-12 h-12 rounded-xl bg-danger/10 flex items-center justify-center mx-auto mb-4">
           <AlertTriangle size={22} className="text-danger" />
         </div>
@@ -145,14 +145,23 @@ export default function InvoiceDetail() {
       </Link>
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-accent-subtle flex items-center justify-center flex-shrink-0">
-            <FileText size={22} strokeWidth={1.75} className="text-accent" />
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-accent-subtle flex items-center justify-center flex-shrink-0">
+            <FileText
+              size={18}
+              strokeWidth={1.75}
+              className="text-accent sm:hidden"
+            />
+            <FileText
+              size={22}
+              strokeWidth={1.75}
+              className="text-accent hidden sm:block"
+            />
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-xl sm:text-2xl heading-tighter text-text-primary">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h2 className="text-lg sm:text-2xl heading-tighter text-text-primary break-all">
                 {invoice.number}
               </h2>
               <span
@@ -161,16 +170,17 @@ export default function InvoiceDetail() {
                 {invoice.status}
               </span>
             </div>
-            <p className="text-sm text-text-muted">
+            <p className="text-sm text-text-muted truncate">
               {invoice.client?.name || 'No client'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Actions */}
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
           <button
             onClick={handleDownload}
-            className="btn-secondary flex-1 sm:flex-none justify-center"
+            className="btn-secondary justify-center"
           >
             <Download size={14} strokeWidth={2} />
             PDF
@@ -178,7 +188,7 @@ export default function InvoiceDetail() {
           {invoice.status !== 'paid' && (
             <button
               onClick={handleMarkPaid}
-              className="btn-secondary flex-1 sm:flex-none justify-center text-success hover:text-success hover:bg-success/5"
+              className="btn-secondary justify-center text-success hover:text-success hover:bg-success/5"
             >
               <CheckCircle2 size={14} strokeWidth={2} />
               Mark Paid
@@ -187,7 +197,7 @@ export default function InvoiceDetail() {
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="btn-secondary flex-1 sm:flex-none justify-center text-danger hover:text-danger hover:bg-danger/5"
+            className="btn-secondary justify-center text-danger hover:text-danger hover:bg-danger/5 col-span-2 sm:col-span-1"
           >
             <Trash2 size={14} strokeWidth={2} />
             Delete
@@ -196,10 +206,14 @@ export default function InvoiceDetail() {
       </div>
 
       {/* Info Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
         <div className="card">
           <div className="flex items-center gap-3">
-            <User size={16} strokeWidth={1.75} className="text-text-subtle" />
+            <User
+              size={16}
+              strokeWidth={1.75}
+              className="text-text-subtle flex-shrink-0"
+            />
             <div className="min-w-0 flex-1">
               <p className="text-xs text-text-subtle uppercase tracking-wider">
                 Billed To
@@ -218,7 +232,11 @@ export default function InvoiceDetail() {
 
         <div className="card">
           <div className="flex items-center gap-3">
-            <Calendar size={16} strokeWidth={1.75} className="text-text-subtle" />
+            <Calendar
+              size={16}
+              strokeWidth={1.75}
+              className="text-text-subtle flex-shrink-0"
+            />
             <div className="min-w-0 flex-1">
               <p className="text-xs text-text-subtle uppercase tracking-wider">
                 Issue Date
@@ -232,7 +250,11 @@ export default function InvoiceDetail() {
 
         <div className="card">
           <div className="flex items-center gap-3">
-            <Calendar size={16} strokeWidth={1.75} className="text-text-subtle" />
+            <Calendar
+              size={16}
+              strokeWidth={1.75}
+              className="text-text-subtle flex-shrink-0"
+            />
             <div className="min-w-0 flex-1">
               <p className="text-xs text-text-subtle uppercase tracking-wider">
                 Due Date
@@ -245,8 +267,8 @@ export default function InvoiceDetail() {
         </div>
       </div>
 
-      {/* Items Table */}
-      <div className="card p-0 overflow-hidden mb-6">
+      {/* Items — Desktop table */}
+      <div className="card p-0 overflow-hidden mb-6 hidden sm:block">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -300,7 +322,6 @@ export default function InvoiceDetail() {
           </table>
         </div>
 
-        {/* Total */}
         <div className="border-t border-border p-5 flex justify-end">
           <div className="text-right">
             <p className="text-xs text-text-subtle uppercase tracking-wider mb-1">
@@ -313,13 +334,48 @@ export default function InvoiceDetail() {
         </div>
       </div>
 
+      {/* Items — Mobile cards */}
+      <div className="sm:hidden space-y-3 mb-6">
+        <p className="text-xs text-text-subtle uppercase tracking-wider px-1">
+          Items
+        </p>
+        {items.length === 0 ? (
+          <div className="card text-center text-sm text-text-muted py-8">
+            No items on this invoice.
+          </div>
+        ) : (
+          items.map((item) => (
+            <div key={item.id} className="card p-4">
+              <p className="text-sm text-text-primary font-medium mb-2 break-words">
+                {item.description}
+              </p>
+              <div className="flex items-center justify-between text-xs text-text-muted">
+                <span className="tabular-nums">
+                  {parseFloat(item.quantity || 0)} × ${parseFloat(item.rate || 0).toFixed(2)}
+                </span>
+                <span className="font-semibold text-text-primary tabular-nums">
+                  ${parseFloat(item.amount || 0).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+
+        <div className="card flex items-center justify-between">
+          <span className="text-sm text-text-muted">Total</span>
+          <span className="text-xl font-semibold heading-tight text-text-primary tabular-nums">
+            ${total.toFixed(2)}
+          </span>
+        </div>
+      </div>
+
       {/* Notes */}
       {invoice.notes && (
         <div className="card">
           <p className="text-xs text-text-subtle uppercase tracking-wider mb-2">
             Notes
           </p>
-          <p className="text-sm text-text-body whitespace-pre-wrap">
+          <p className="text-sm text-text-body whitespace-pre-wrap break-words">
             {invoice.notes}
           </p>
         </div>

@@ -116,12 +116,12 @@ export default function PublicProject() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-10">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {/* Project Header */}
         <div className="mb-8">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <h1 className="text-3xl font-semibold text-text-primary mb-2">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-text-primary mb-2">
                 {project.name}
               </h1>
               {project.description && (
@@ -247,7 +247,7 @@ export default function PublicProject() {
             to="/register"
             className="text-xs text-accent hover:text-accent-hover font-medium mt-1 inline-block"
           >
-            Get started with Klient ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
+            Get started with Klient ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢
           </Link>
         </div>
       </main>

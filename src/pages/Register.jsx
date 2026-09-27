@@ -37,7 +37,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-base flex items-center justify-center p-4">
+    <div className="min-h-screen bg-bg-base flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">

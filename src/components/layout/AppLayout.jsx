@@ -24,13 +24,12 @@ export default function AppLayout({ title }) {
     <div className="min-h-screen bg-bg-base">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Content area — mobile pe full width, desktop pe 240px offset */}
       <div className="lg:ml-60">
         <Topbar
           title={title}
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="p-4 sm:p-6 max-w-[1200px]">
+        <main className="p-4 sm:p-6 max-w-[1200px] w-full">
           <Outlet />
         </main>
       </div>

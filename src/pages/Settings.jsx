@@ -57,7 +57,7 @@ function ProfileSection({ user }) {
   };
 
   return (
-    <div className="card">
+    <div className="card p-4 sm:p-6">
       <div className="flex items-start gap-3 mb-6 pb-6 border-b border-border">
         <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
           <User size={18} strokeWidth={1.75} className="text-accent" />
@@ -156,7 +156,7 @@ function PasswordSection() {
   };
 
   return (
-    <div className="card">
+    <div className="card p-4 sm:p-6">
       <div className="flex items-start gap-3 mb-6 pb-6 border-b border-border">
         <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
           <Lock size={18} strokeWidth={1.75} className="text-accent" />
@@ -180,7 +180,7 @@ function PasswordSection() {
             value={form.current_password}
             onChange={handleChange}
             className="input"
-            placeholder="••••••••"
+            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
             required
           />
         </div>

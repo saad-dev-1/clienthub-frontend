@@ -22,14 +22,16 @@ export default function Home() {
     <div className="min-h-screen bg-bg-base text-text-primary">
       {/* ============ NAV ============ */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg-base/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <img
               src="/src/assets/logo.svg"
               alt="Klient"
               className="w-7 h-7 rounded-lg"
             />
-            <span className="text-sm font-semibold heading-tight">Klient</span>
+            <span className="text-sm font-semibold heading-tight">
+              Klient
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -53,7 +55,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
@@ -87,7 +89,7 @@ export default function Home() {
 
             <Link
               to="/login"
-              className="text-sm text-text-muted hover:text-text-primary transition-colors px-3 py-1.5"
+              className="text-sm text-text-muted hover:text-text-primary transition-colors px-2 sm:px-3 py-1.5 hidden sm:inline-block"
             >
               Sign in
             </Link>
@@ -99,10 +101,10 @@ export default function Home() {
       </nav>
 
       {/* ============ HERO ============ */}
-      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+      <section className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 overflow-hidden">
         <div className="absolute inset-0 -z-10 pointer-events-none">
           <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full opacity-[0.15]"
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[900px] h-[400px] sm:h-[600px] rounded-full opacity-[0.15]"
             style={{
               background:
                 'radial-gradient(circle, rgba(109,40,217,0.6) 0%, transparent 70%)',
@@ -124,14 +126,16 @@ export default function Home() {
         />
 
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-12 gap-12 items-center">
-            <div className="md:col-span-6">
+          {/* Hero grid — split only at lg (1024px+) */}
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            {/* Left — Text */}
+            <div className="lg:col-span-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-6">
                 <Sparkles size={12} strokeWidth={2} className="text-accent" />
                 <span>Public share links, built in</span>
               </div>
 
-              <h1 className="text-5xl md:text-6xl heading-tightest mb-6 leading-[1.05]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl heading-tightest mb-6 leading-[1.05]">
                 The client portal,
                 <br />
                 <span className="text-text-muted">
@@ -139,22 +143,22 @@ export default function Home() {
                 </span>
               </h1>
 
-              <p className="text-lg text-text-body mb-8 leading-relaxed max-w-lg">
+              <p className="text-base sm:text-lg text-text-body mb-8 leading-relaxed max-w-lg">
                 Turn projects, files, and invoices into one clean, shareable
                 link. Your client opens it, no login, no emails, no chaos.
               </p>
 
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
                 <Link
                   to="/register"
-                  className="btn-primary px-5 py-2.5 text-sm"
+                  className="btn-primary px-5 py-2.5 text-sm w-full sm:w-auto justify-center"
                 >
                   Start for free
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
                 <a
                   href="#how"
-                  className="btn-secondary px-5 py-2.5 text-sm"
+                  className="btn-secondary px-5 py-2.5 text-sm w-full sm:w-auto justify-center"
                 >
                   See how it works
                 </a>
@@ -165,8 +169,9 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="md:col-span-6">
-              <div className="relative">
+            {/* Right — Product Mockup */}
+            <div className="lg:col-span-6">
+              <div className="relative max-w-lg mx-auto lg:max-w-none">
                 <div
                   className="absolute -inset-8 -z-10 rounded-full opacity-40"
                   style={{
@@ -176,14 +181,15 @@ export default function Home() {
                   }}
                 />
 
+                {/* Browser frame */}
                 <div className="rounded-2xl border border-border bg-bg-card overflow-hidden shadow-modal">
-                  <div className="h-9 border-b border-border bg-bg-hover flex items-center gap-1.5 px-4">
-                    <div className="w-2.5 h-2.5 rounded-full bg-danger/40" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-warning/40" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-success/40" />
-                    <div className="flex-1 mx-3">
-                      <div className="h-5 max-w-xs mx-auto bg-bg-base rounded flex items-center justify-center">
-                        <span className="text-[10px] text-text-subtle">
+                  <div className="h-9 border-b border-border bg-bg-hover flex items-center gap-1.5 px-3 sm:px-4">
+                    <div className="w-2.5 h-2.5 rounded-full bg-danger/40 flex-shrink-0" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-warning/40 flex-shrink-0" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-success/40 flex-shrink-0" />
+                    <div className="flex-1 mx-2 sm:mx-3 min-w-0">
+                      <div className="h-5 max-w-xs mx-auto bg-bg-base rounded flex items-center justify-center px-2">
+                        <span className="text-[10px] text-text-subtle truncate">
                           klient.app/dashboard
                         </span>
                       </div>
@@ -191,14 +197,15 @@ export default function Home() {
                   </div>
 
                   <div className="flex h-80">
-                    <div className="w-32 border-r border-border p-3 space-y-0.5 bg-bg-base/50">
+                    {/* Sidebar */}
+                    <div className="w-28 sm:w-32 border-r border-border p-2 sm:p-3 space-y-0.5 bg-bg-base/50 flex-shrink-0">
                       <div className="flex items-center gap-2 px-2 py-1.5 mb-3">
                         <img
                           src="/src/assets/logo.svg"
                           alt="Klient"
-                          className="w-5 h-5 rounded"
+                          className="w-5 h-5 rounded flex-shrink-0"
                         />
-                        <span className="text-[10px] font-semibold">
+                        <span className="text-[10px] font-semibold truncate">
                           Klient
                         </span>
                       </div>
@@ -211,7 +218,7 @@ export default function Home() {
                       ].map((item, i) => (
                         <div
                           key={item}
-                          className={`text-[10px] px-2 py-1.5 rounded-md ${
+                          className={`text-[10px] px-2 py-1.5 rounded-md truncate ${
                             i === 0
                               ? 'bg-accent-subtle text-accent font-medium'
                               : 'text-text-muted'
@@ -222,17 +229,19 @@ export default function Home() {
                       ))}
                     </div>
 
-                    <div className="flex-1 p-4 space-y-4">
-                      <div>
-                        <div className="text-sm font-semibold heading-tight mb-0.5">
+                    {/* Main area */}
+                    <div className="flex-1 p-3 sm:p-4 space-y-3 sm:space-y-4 min-w-0">
+                      <div className="min-w-0">
+                        <div className="text-xs sm:text-sm font-semibold heading-tight mb-0.5 truncate">
                           Good morning, Saad
                         </div>
-                        <div className="text-[10px] text-text-subtle">
+                        <div className="text-[10px] text-text-subtle truncate">
                           Here&apos;s what&apos;s happening today.
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2">
+                      {/* Stats — perfectly responsive */}
+                      <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                         {[
                           { label: 'PROJECTS', value: '8' },
                           { label: 'CLIENTS', value: '12' },
@@ -240,24 +249,25 @@ export default function Home() {
                         ].map((stat) => (
                           <div
                             key={stat.label}
-                            className="border border-border rounded-lg p-2.5 bg-bg-card"
+                            className="border border-border rounded-lg p-1.5 sm:p-2.5 bg-bg-card min-w-0"
                           >
-                            <div className="text-[9px] text-text-subtle uppercase tracking-wider">
+                            <div className="text-[8px] sm:text-[9px] text-text-subtle uppercase tracking-wider truncate">
                               {stat.label}
                             </div>
-                            <div className="text-base font-semibold tabular-nums mt-0.5">
+                            <div className="text-[11px] sm:text-sm md:text-base font-semibold tabular-nums mt-0.5 truncate">
                               {stat.value}
                             </div>
                           </div>
                         ))}
                       </div>
 
-                      <div className="border border-border rounded-lg p-3 bg-bg-card">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="text-[11px] font-medium">
+                      {/* Recent project */}
+                      <div className="border border-border rounded-lg p-2.5 sm:p-3 bg-bg-card">
+                        <div className="flex items-center justify-between mb-2 gap-2 min-w-0">
+                          <div className="text-[10px] sm:text-[11px] font-medium truncate">
                             Nexus Store
                           </div>
-                          <div className="text-[9px] text-text-subtle tabular-nums">
+                          <div className="text-[9px] text-text-subtle tabular-nums flex-shrink-0">
                             75%
                           </div>
                         </div>
@@ -276,22 +286,22 @@ export default function Home() {
 
       {/* ============ TRUST STRIP ============ */}
       <section className="border-y border-border bg-bg-card/30">
-        <div className="max-w-6xl mx-auto px-6 py-10">
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm text-text-muted">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10 gap-y-3 sm:gap-y-4 text-xs sm:text-sm text-text-muted">
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success flex-shrink-0" />
               <span>No signup for clients</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success flex-shrink-0" />
               <span>Setup in 60 seconds</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success flex-shrink-0" />
               <span>Free forever plan</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={16} strokeWidth={2} className="text-success" />
+              <CheckCircle2 size={16} strokeWidth={2} className="text-success flex-shrink-0" />
               <span>Cancel anytime</span>
             </div>
           </div>
@@ -299,22 +309,22 @@ export default function Home() {
       </section>
 
       {/* ============ HOW IT WORKS ============ */}
-      <section id="how" className="py-28 px-6 relative">
+      <section id="how" className="py-16 sm:py-20 md:py-28 px-4 sm:px-6 relative">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-5">
               <Zap size={12} strokeWidth={2} className="text-accent" />
               <span>How it works</span>
             </div>
-            <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl heading-tightest mb-4">
               From zero to shareable in minutes
             </h2>
-            <p className="text-text-body text-lg">
+            <p className="text-text-body text-base sm:text-lg">
               Three simple steps. No tutorials needed.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               {
                 num: '01',
@@ -332,7 +342,7 @@ export default function Home() {
                 desc: 'One click generates a public link. Send to client. Done.',
               },
             ].map((step) => (
-              <div key={step.num} className="card card-hover p-6">
+              <div key={step.num} className="card card-hover p-5 sm:p-6">
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border bg-bg-base text-sm font-semibold text-text-primary mb-5 tabular-nums">
                   {step.num}
                 </div>
@@ -351,10 +361,10 @@ export default function Home() {
       {/* ============ FEATURES ============ */}
       <section
         id="features"
-        className="py-28 px-6 border-t border-border bg-bg-card/30 relative overflow-hidden"
+        className="py-16 sm:py-20 md:py-28 px-4 sm:px-6 border-t border-border bg-bg-card/30 relative overflow-hidden"
       >
         <div
-          className="absolute top-0 right-0 w-[600px] h-[600px] -z-10 opacity-[0.08] pointer-events-none"
+          className="absolute top-0 right-0 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] -z-10 opacity-[0.08] pointer-events-none"
           style={{
             background:
               'radial-gradient(circle, rgba(109,40,217,1) 0%, transparent 70%)',
@@ -363,25 +373,25 @@ export default function Home() {
         />
 
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-5">
               <span>Features</span>
             </div>
-            <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl heading-tightest mb-4">
               Everything you need. Nothing you don&apos;t.
             </h2>
-            <p className="text-text-body text-lg">
+            <p className="text-text-body text-base sm:text-lg">
               Simple enough to start today. Powerful enough to run your
               business.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            <div className="md:col-span-4 card card-hover p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
+            <div className="lg:col-span-4 card card-hover p-5 sm:p-6">
               <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
                 <Link2 size={20} strokeWidth={1.75} className="text-accent" />
               </div>
-              <h3 className="text-xl font-semibold heading-tight mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold heading-tight mb-2">
                 Public share links
               </h3>
               <p className="text-sm text-text-body leading-relaxed mb-6 max-w-lg">
@@ -389,8 +399,8 @@ export default function Home() {
                 with no account required. The simplest client portal ever made.
               </p>
 
-              <div className="rounded-lg border border-border bg-bg-base p-3 flex items-center gap-3">
-                <div className="flex-1 truncate">
+              <div className="rounded-lg border border-border bg-bg-base p-3 flex items-center gap-2 sm:gap-3">
+                <div className="flex-1 min-w-0">
                   <div className="text-[10px] text-text-subtle uppercase tracking-wider mb-0.5">
                     Share link
                   </div>
@@ -404,7 +414,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="md:col-span-2 card card-hover p-6">
+            <div className="lg:col-span-2 card card-hover p-5 sm:p-6">
               <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
                 <FolderKanban
                   size={20}
@@ -420,7 +430,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="md:col-span-2 card card-hover p-6">
+            <div className="lg:col-span-2 card card-hover p-5 sm:p-6">
               <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
                 <FileText
                   size={20}
@@ -436,8 +446,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="md:col-span-4 card card-hover p-6">
-              <div className="flex items-start gap-5">
+            <div className="lg:col-span-4 card card-hover p-5 sm:p-6">
+              <div className="flex items-start gap-4 sm:gap-5">
                 <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
                   <BarChart3
                     size={20}
@@ -445,7 +455,7 @@ export default function Home() {
                     className="text-accent"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-semibold heading-tight mb-2">
                     Insights and analytics
                   </h3>
@@ -457,7 +467,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="md:col-span-3 card card-hover p-6">
+            <div className="lg:col-span-3 card card-hover p-5 sm:p-6">
               <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
                 <Users size={20} strokeWidth={1.75} className="text-accent" />
               </div>
@@ -469,7 +479,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="md:col-span-3 card card-hover p-6">
+            <div className="lg:col-span-3 card card-hover p-5 sm:p-6">
               <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center mb-5">
                 <Shield size={20} strokeWidth={1.75} className="text-accent" />
               </div>
@@ -485,21 +495,21 @@ export default function Home() {
       </section>
 
       {/* ============ PRICING ============ */}
-      <section id="pricing" className="py-28 px-6 border-t border-border">
+      <section id="pricing" className="py-16 sm:py-20 md:py-28 px-4 sm:px-6 border-t border-border">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-5">
               <span>Pricing</span>
             </div>
-            <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl heading-tightest mb-4">
               Simple, honest pricing
             </h2>
-            <p className="text-text-body text-lg">
+            <p className="text-text-body text-base sm:text-lg">
               Start free. Upgrade when you need more.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
                 name: 'Free',
@@ -594,7 +604,7 @@ export default function Home() {
       </section>
 
       {/* ============ FINAL CTA ============ */}
-      <section className="py-28 px-6 border-t border-border relative overflow-hidden">
+      <section className="py-16 sm:py-20 md:py-28 px-4 sm:px-6 border-t border-border relative overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-[0.08] pointer-events-none"
           style={{
@@ -605,7 +615,7 @@ export default function Home() {
         />
 
         <div className="max-w-4xl mx-auto">
-          <div className="rounded-2xl border border-border bg-bg-card p-12 text-center relative overflow-hidden">
+          <div className="rounded-2xl border border-border bg-bg-card p-6 sm:p-10 md:p-12 text-center relative overflow-hidden">
             <div
               className="absolute inset-0 opacity-[0.04]"
               style={{
@@ -615,16 +625,16 @@ export default function Home() {
             />
 
             <div className="relative">
-              <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl heading-tightest mb-4">
                 Start shipping work today
               </h2>
-              <p className="text-text-body text-lg mb-8 max-w-lg mx-auto">
+              <p className="text-text-body text-base sm:text-lg mb-8 max-w-lg mx-auto">
                 Stop chasing clients for updates. Send one link. Done.
               </p>
               <div className="flex items-center justify-center gap-3">
                 <Link
                   to="/register"
-                  className="btn-primary px-5 py-2.5 text-sm"
+                  className="btn-primary px-5 py-2.5 text-sm w-full sm:w-auto justify-center"
                 >
                   Get started free
                   <ArrowRight size={16} strokeWidth={2} />
@@ -639,10 +649,10 @@ export default function Home() {
       </section>
 
       {/* ============ FOOTER ============ */}
-      <footer className="border-t border-border py-12 px-6">
+      <footer className="border-t border-border py-10 sm:py-12 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-5 gap-8 mb-10">
-            <div className="md:col-span-2">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8 mb-10">
+            <div className="col-span-2">
               <div className="flex items-center gap-2 mb-3">
                 <img
                   src="/src/assets/logo.svg"
