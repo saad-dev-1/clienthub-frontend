@@ -11,6 +11,7 @@ import Tasks from './pages/Tasks';
 import Invoices from './pages/Invoices';
 import PublicProject from './pages/PublicProject';
 import Settings from './pages/Settings';
+import NotFound from './pages/NotFound';
 import AppLayout from './components/layout/AppLayout';
 
 export default function App() {
@@ -45,6 +46,9 @@ export default function App() {
       <Route element={<AppLayout title="Settings" />}>
         <Route path="/settings" element={<Settings />} />
       </Route>
+
+      {/* 404 — Catch all */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
