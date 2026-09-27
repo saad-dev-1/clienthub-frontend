@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, FolderKanban, MoreHorizontal, Loader2 } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  FolderKanban,
+  Pencil,
+  Trash2,
+  Loader2,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
 import EmptyState from '../components/ui/EmptyState';
@@ -13,13 +20,14 @@ const statusStyles = {
   on_hold: 'badge-warning',
 };
 
-// Helper: extract array from any response shape
-function extractArray(response) {
-  if (Array.isArray(response)) return response;
-  if (Array.isArray(response?.data)) return response.data;
-  if (Array.isArray(response?.data?.data)) return response.data.data;
-  return [];
-}
+const emptyForm = {
+  name: '',
+  client_id: '',
+  deadline: '',
+  description: '',
+  status: 'active',
+  progress: 0,
+};
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
@@ -28,14 +36,8 @@ export default function Projects() {
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form, setForm] = useState({
-    name: '',
-    client_id: '',
-    deadline: '',
-    description: '',
-    status: 'active',
-    progress: 0,
-  });
+  const [editingProject, setEditingProject] = useState(null);
+  const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
     fetchData();
@@ -44,26 +46,14 @@ export default function Projects() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [projectsResponse, clientsResponse] = await Promise.all([
+      const [projectsData, clientsData] = await Promise.all([
         projectsApi.list(),
         clientsApi.list(),
       ]);
-
-      // 🔍 DEBUG LOGS
-      console.log('🚀 Projects API raw:', projectsResponse);
-      console.log('🚀 Clients API raw:', clientsResponse);
-
-      const projectsArray = extractArray(projectsResponse);
-      const clientsArray = extractArray(clientsResponse);
-
-      console.log('✅ Projects array:', projectsArray);
-      console.log('✅ First project:', projectsArray[0]);
-      console.log('✅ First project ID:', projectsArray[0]?.id);
-
-      setProjects(projectsArray);
-      setClients(clientsArray);
+      setProjects(Array.isArray(projectsData) ? projectsData : []);
+      setClients(Array.isArray(clientsData) ? clientsData : []);
     } catch (err) {
-      console.error('❌ Fetch error:', err.response?.data || err);
+      console.error('Fetch error:', err.response?.data || err);
       toast.error('Failed to load projects');
       setProjects([]);
       setClients([]);
@@ -81,6 +71,27 @@ export default function Projects() {
       (p.client?.name || '').toLowerCase().includes(search.toLowerCase())
   );
 
+  const openCreateModal = () => {
+    setEditingProject(null);
+    setForm(emptyForm);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (project) => {
+    setEditingProject(project);
+    setForm({
+      name: project.name || '',
+      client_id: project.client_id || '',
+      deadline: project.deadline
+        ? new Date(project.deadline).toISOString().split('T')[0]
+        : '',
+      description: project.description || '',
+      status: project.status || 'active',
+      progress: project.progress || 0,
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -90,27 +101,44 @@ export default function Projects() {
         client_id: form.client_id || null,
         deadline: form.deadline || null,
       };
-      const newProject = await projectsApi.create(payload);
-      setProjects([newProject, ...projectsArray]);
-      setForm({
-        name: '',
-        client_id: '',
-        deadline: '',
-        description: '',
-        status: 'active',
-        progress: 0,
-      });
+
+      if (editingProject) {
+        const updated = await projectsApi.update(editingProject.id, payload);
+        setProjects(
+          projectsArray.map((p) =>
+            p.id === editingProject.id ? updated : p
+          )
+        );
+        toast.success('Project updated');
+      } else {
+        const newProject = await projectsApi.create(payload);
+        setProjects([newProject, ...projectsArray]);
+        toast.success('Project created');
+      }
       setIsModalOpen(false);
-      toast.success('Project created');
+      setEditingProject(null);
+      setForm(emptyForm);
     } catch (err) {
-      console.error('Create project error:', err.response?.data);
+      console.error('Submit error:', err.response?.data);
       const errors = err.response?.data?.errors;
       const message = errors
         ? Object.values(errors)[0][0]
-        : err.response?.data?.message || 'Failed to create project';
+        : err.response?.data?.message || 'Something went wrong';
       toast.error(message);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (project) => {
+    if (!confirm(`Delete "${project.name}"? This cannot be undone.`)) return;
+    try {
+      await projectsApi.delete(project.id);
+      setProjects(projectsArray.filter((p) => p.id !== project.id));
+      toast.success('Project deleted');
+    } catch (err) {
+      console.error('Delete error:', err.response?.data);
+      toast.error('Failed to delete project');
     }
   };
 
@@ -126,10 +154,7 @@ export default function Projects() {
             Track all your ongoing work in one place
           </p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="btn-primary"
-        >
+        <button onClick={openCreateModal} className="btn-primary">
           <Plus size={16} strokeWidth={2} />
           New Project
         </button>
@@ -168,10 +193,7 @@ export default function Projects() {
             }
             action={
               !search && (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="btn-primary"
-                >
+                <button onClick={openCreateModal} className="btn-primary">
                   <Plus size={16} strokeWidth={2} />
                   Create Project
                 </button>
@@ -181,20 +203,26 @@ export default function Projects() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map((project, index) => (
+          {filtered.map((project) => (
             <ProjectCard
-              key={project.id || project._id || index}
+              key={project.id}
               project={project}
+              onEdit={openEditModal}
+              onDelete={handleDelete}
             />
           ))}
         </div>
       )}
 
-      {/* Create Modal */}
+      {/* Create / Edit Modal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="New Project"
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingProject(null);
+          setForm(emptyForm);
+        }}
+        title={editingProject ? 'Edit Project' : 'New Project'}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -213,7 +241,9 @@ export default function Projects() {
             <label className="label">Client</label>
             <select
               value={form.client_id}
-              onChange={(e) => setForm({ ...form, client_id: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, client_id: e.target.value })
+              }
               className="input"
             >
               <option value="">— No client —</option>
@@ -226,11 +256,44 @@ export default function Projects() {
           </div>
 
           <div>
+            <label className="label">Status</label>
+            <select
+              value={form.status}
+              onChange={(e) => setForm({ ...form, status: e.target.value })}
+              className="input"
+            >
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="on_hold">On Hold</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="label">Progress (%)</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={form.progress}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  progress: parseInt(e.target.value) || 0,
+                })
+              }
+              className="input"
+              placeholder="0"
+            />
+          </div>
+
+          <div>
             <label className="label">Deadline</label>
             <input
               type="date"
               value={form.deadline}
-              onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, deadline: e.target.value })
+              }
               className="input"
             />
           </div>
@@ -250,7 +313,11 @@ export default function Projects() {
           <div className="flex gap-3 pt-2">
             <button
               type="button"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+                setEditingProject(null);
+                setForm(emptyForm);
+              }}
               className="btn-secondary flex-1"
               disabled={submitting}
             >
@@ -261,7 +328,13 @@ export default function Projects() {
               className="btn-primary flex-1"
               disabled={submitting}
             >
-              {submitting ? 'Creating...' : 'Create Project'}
+              {submitting
+                ? editingProject
+                  ? 'Saving...'
+                  : 'Creating...'
+                : editingProject
+                ? 'Save Changes'
+                : 'Create Project'}
             </button>
           </div>
         </form>
@@ -270,67 +343,79 @@ export default function Projects() {
   );
 }
 
-function ProjectCard({ project }) {
-  // Defensive: try multiple ID fields
-  const projectId = project.id || project._id || project.uuid;
-
-  const handleClick = (e) => {
-    if (!projectId) {
-      e.preventDefault();
-      console.error('❌ Project ID missing:', project);
-      return;
-    }
-  };
-
+function ProjectCard({ project, onEdit, onDelete }) {
   return (
-    <Link
-      to={projectId ? `/projects/${projectId}` : '#'}
-      onClick={handleClick}
-      className="block card hover:border-border-strong transition-colors cursor-pointer"
-    >
-      <div className="flex items-start justify-between mb-4">
+    <div className="card hover:border-border-strong transition-colors group relative">
+      <Link
+        to={`/projects/${project.id}`}
+        className="block cursor-pointer"
+      >
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-sm font-semibold text-text-primary">
+                {project.name}
+              </h3>
+              <span
+                className={statusStyles[project.status] || 'badge-neutral'}
+              >
+                {(project.status || 'active').replace('_', ' ')}
+              </span>
+            </div>
+            <p className="text-xs text-text-muted">
+              {project.client?.name || 'No client'} • Due{' '}
+              {project.deadline
+                ? new Date(project.deadline).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })
+                : '—'}
+            </p>
+          </div>
+        </div>
+
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-sm font-semibold text-text-primary">
-              {project.name || 'Untitled'}
-            </h3>
-            <span className={statusStyles[project.status] || 'badge-neutral'}>
-              {(project.status || 'active').replace('_', ' ')}
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-text-subtle">Progress</span>
+            <span className="text-xs font-medium text-text-primary tabular-nums">
+              {project.progress || 0}%
             </span>
           </div>
-          <p className="text-xs text-text-muted">
-            {project.client?.name || 'No client'} • Due{' '}
-            {project.deadline
-              ? new Date(project.deadline).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })
-              : '—'}
-          </p>
+          <div className="h-1.5 bg-bg-hover rounded-full overflow-hidden">
+            <div
+              className="h-full bg-accent transition-all duration-300"
+              style={{ width: `${project.progress || 0}%` }}
+            />
+          </div>
         </div>
+      </Link>
+
+      {/* Action buttons — top-right corner, visible on hover */}
+      <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
-          onClick={(e) => e.preventDefault()}
-          className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onEdit(project);
+          }}
+          className="p-1.5 rounded-lg bg-bg-card border border-border text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+          title="Edit"
         >
-          <MoreHorizontal size={16} strokeWidth={1.75} />
+          <Pencil size={14} strokeWidth={1.75} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(project);
+          }}
+          className="p-1.5 rounded-lg bg-bg-card border border-border text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
+          title="Delete"
+        >
+          <Trash2 size={14} strokeWidth={1.75} />
         </button>
       </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-text-subtle">Progress</span>
-          <span className="text-xs font-medium text-text-primary tabular-nums">
-            {project.progress || 0}%
-          </span>
-        </div>
-        <div className="h-1.5 bg-bg-hover rounded-full overflow-hidden">
-          <div
-            className="h-full bg-accent transition-all duration-300"
-            style={{ width: `${project.progress || 0}%` }}
-          />
-        </div>
-      </div>
-    </Link>
+    </div>
   );
 }

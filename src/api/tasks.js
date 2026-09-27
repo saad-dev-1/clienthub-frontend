@@ -1,6 +1,7 @@
 import api from './axios';
 
 export const tasksApi = {
+  listAll: () => api.get('/tasks').then((r) => r.data),
   list: (projectId) =>
     api.get(`/projects/${projectId}/tasks`).then((r) => r.data),
   create: (projectId, data) =>
