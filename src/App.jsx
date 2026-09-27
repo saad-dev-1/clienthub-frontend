@@ -11,6 +11,7 @@ import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Tasks from './pages/Tasks';
 import Invoices from './pages/Invoices';
+import InvoiceDetail from './pages/InvoiceDetail';
 import PublicProject from './pages/PublicProject';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
@@ -46,6 +47,9 @@ export default function App() {
       </Route>
       <Route element={<AppLayout title="Invoices" />}>
         <Route path="/invoices" element={<Invoices />} />
+      </Route>
+      <Route element={<AppLayout title="Invoice Details" />}>
+        <Route path="/invoices/:id" element={<InvoiceDetail />} />
       </Route>
       <Route element={<AppLayout title="Settings" />}>
         <Route path="/settings" element={<Settings />} />

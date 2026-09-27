@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
+import ConfirmModal from '../components/ui/ConfirmModal';
 import EmptyState from '../components/ui/EmptyState';
 import { projectsApi } from '../api/projects';
 import { clientsApi } from '../api/clients';
@@ -38,6 +39,8 @@ export default function Projects() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -130,15 +133,19 @@ export default function Projects() {
     }
   };
 
-  const handleDelete = async (project) => {
-    if (!confirm(`Delete "${project.name}"? This cannot be undone.`)) return;
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await projectsApi.delete(project.id);
-      setProjects(projectsArray.filter((p) => p.id !== project.id));
+      await projectsApi.delete(deleteTarget.id);
+      setProjects(projectsArray.filter((p) => p.id !== deleteTarget.id));
       toast.success('Project deleted');
+      setDeleteTarget(null);
     } catch (err) {
       console.error('Delete error:', err.response?.data);
       toast.error('Failed to delete project');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -211,11 +218,23 @@ export default function Projects() {
               key={project.id}
               project={project}
               onEdit={openEditModal}
-              onDelete={handleDelete}
+              onDelete={setDeleteTarget}
             />
           ))}
         </div>
       )}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Project"
+        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        confirmText="Delete Project"
+        loading={deleting}
+        variant="danger"
+      />
 
       {/* Create / Edit Modal */}
       <Modal

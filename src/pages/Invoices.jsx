@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -10,6 +11,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
+import ConfirmModal from '../components/ui/ConfirmModal';
 import EmptyState from '../components/ui/EmptyState';
 import { invoicesApi } from '../api/invoices';
 import { clientsApi } from '../api/clients';
@@ -39,6 +41,8 @@ export default function Invoices() {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -139,18 +143,30 @@ export default function Invoices() {
     }
   };
 
-  const handleDelete = async (invoice) => {
-    if (!confirm(`Delete invoice ${invoice.number}?`)) return;
+  const handleDeleteClick = (invoice, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDeleteTarget(invoice);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await invoicesApi.delete(invoice.id);
-      setInvoices(invoices.filter((i) => i.id !== invoice.id));
+      await invoicesApi.delete(deleteTarget.id);
+      setInvoices(invoices.filter((i) => i.id !== deleteTarget.id));
       toast.success('Invoice deleted');
+      setDeleteTarget(null);
     } catch (err) {
       toast.error('Failed to delete invoice');
+    } finally {
+      setDeleting(false);
     }
   };
 
-  const handleMarkPaid = async (invoice) => {
+  const handleMarkPaid = async (invoice, e) => {
+    e.preventDefault();
+    e.stopPropagation();
     try {
       const updated = await invoicesApi.markPaid(invoice.id);
       setInvoices(invoices.map((i) => (i.id === invoice.id ? updated : i)));
@@ -160,7 +176,9 @@ export default function Invoices() {
     }
   };
 
-  const handleDownload = async (invoice) => {
+  const handleDownload = async (invoice, e) => {
+    e.preventDefault();
+    e.stopPropagation();
     try {
       await invoicesApi.downloadPdf(invoice.id, invoice.number);
       toast.success('PDF downloaded');
@@ -241,13 +259,25 @@ export default function Invoices() {
               key={invoice.id}
               invoice={invoice}
               isLast={index === filtered.length - 1}
-              onDelete={handleDelete}
+              onDelete={handleDeleteClick}
               onMarkPaid={handleMarkPaid}
               onDownload={handleDownload}
             />
           ))}
         </div>
       )}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Invoice"
+        description={`Are you sure you want to delete invoice ${deleteTarget?.number}? This action cannot be undone.`}
+        confirmText="Delete Invoice"
+        loading={deleting}
+        variant="danger"
+      />
 
       {/* Create Modal */}
       <Modal
@@ -427,66 +457,73 @@ function InvoiceRow({ invoice, isLast, onDelete, onMarkPaid, onDownload }) {
       }`}
     >
       <div className="flex items-start gap-3">
-        {/* Icon */}
-        <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
-          <FileText size={16} strokeWidth={1.75} className="text-accent" />
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-medium text-text-primary whitespace-nowrap">
-              {invoice.number}
-            </span>
-            <span className={statusStyles[invoice.status] || 'badge-neutral'}>
-              {invoice.status}
-            </span>
+        {/* Clickable content */}
+        <Link
+          to={`/invoices/${invoice.id}`}
+          className="flex items-start gap-3 flex-1 min-w-0 cursor-pointer"
+        >
+          <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
+            <FileText size={16} strokeWidth={1.75} className="text-accent" />
           </div>
-          <p className="text-xs text-text-muted truncate">
-            {invoice.client?.name || 'No client'} • Due {formattedDue}
-          </p>
-        </div>
 
-        {/* Total + desktop actions */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <p className="text-sm font-semibold text-text-primary tabular-nums whitespace-nowrap">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-sm font-medium text-text-primary whitespace-nowrap">
+                {invoice.number}
+              </span>
+              <span className={statusStyles[invoice.status] || 'badge-neutral'}>
+                {invoice.status}
+              </span>
+            </div>
+            <p className="text-xs text-text-muted truncate">
+              {invoice.client?.name || 'No client'} • Due {formattedDue}
+            </p>
+          </div>
+
+          <p className="text-sm font-semibold text-text-primary tabular-nums whitespace-nowrap hidden sm:block">
             ${formattedTotal}
           </p>
+        </Link>
 
-          <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Mobile total */}
+        <p className="text-sm font-semibold text-text-primary tabular-nums whitespace-nowrap sm:hidden">
+          ${formattedTotal}
+        </p>
+
+        {/* Desktop actions */}
+        <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <button
+            onClick={(e) => onDownload(invoice, e)}
+            className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent-subtle transition-colors"
+            title="Download PDF"
+          >
+            <Download size={14} strokeWidth={1.75} />
+          </button>
+
+          {invoice.status !== 'paid' && (
             <button
-              onClick={() => onDownload(invoice)}
-              className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent-subtle transition-colors"
-              title="Download PDF"
+              onClick={(e) => onMarkPaid(invoice, e)}
+              className="p-1.5 rounded-lg text-text-muted hover:text-success hover:bg-success/10 transition-colors"
+              title="Mark as paid"
             >
-              <Download size={14} strokeWidth={1.75} />
+              <CheckCircle2 size={14} strokeWidth={1.75} />
             </button>
+          )}
 
-            {invoice.status !== 'paid' && (
-              <button
-                onClick={() => onMarkPaid(invoice)}
-                className="p-1.5 rounded-lg text-text-muted hover:text-success hover:bg-success/10 transition-colors"
-                title="Mark as paid"
-              >
-                <CheckCircle2 size={14} strokeWidth={1.75} />
-              </button>
-            )}
-
-            <button
-              onClick={() => onDelete(invoice)}
-              className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/5 transition-colors"
-              title="Delete"
-            >
-              <Trash2 size={14} strokeWidth={1.75} />
-            </button>
-          </div>
+          <button
+            onClick={(e) => onDelete(invoice, e)}
+            className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/5 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} strokeWidth={1.75} />
+          </button>
         </div>
       </div>
 
       {/* Mobile actions */}
       <div className="flex sm:hidden items-center gap-2 mt-3 pl-13">
         <button
-          onClick={() => onDownload(invoice)}
+          onClick={(e) => onDownload(invoice, e)}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-accent hover:border-accent/30 transition-colors"
         >
           <Download size={13} strokeWidth={1.75} />
@@ -495,7 +532,7 @@ function InvoiceRow({ invoice, isLast, onDelete, onMarkPaid, onDownload }) {
 
         {invoice.status !== 'paid' && (
           <button
-            onClick={() => onMarkPaid(invoice)}
+            onClick={(e) => onMarkPaid(invoice, e)}
             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-success hover:border-success/30 transition-colors"
           >
             <CheckCircle2 size={13} strokeWidth={1.75} />
@@ -504,7 +541,7 @@ function InvoiceRow({ invoice, isLast, onDelete, onMarkPaid, onDownload }) {
         )}
 
         <button
-          onClick={() => onDelete(invoice)}
+          onClick={(e) => onDelete(invoice, e)}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-danger hover:border-danger/30 hover:bg-danger/5 transition-colors"
         >
           <Trash2 size={13} strokeWidth={1.75} />

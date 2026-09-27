@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
+import ConfirmModal from '../components/ui/ConfirmModal';
 import EmptyState from '../components/ui/EmptyState';
 import { clientsApi } from '../api/clients';
 
@@ -23,6 +24,8 @@ export default function Clients() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchClients();
@@ -98,15 +101,19 @@ export default function Clients() {
     }
   };
 
-  const handleDelete = async (client) => {
-    if (!confirm(`Delete "${client.name}"? This cannot be undone.`)) return;
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await clientsApi.delete(client.id);
-      setClients(clientsArray.filter((c) => c.id !== client.id));
+      await clientsApi.delete(deleteTarget.id);
+      setClients(clientsArray.filter((c) => c.id !== deleteTarget.id));
       toast.success('Client deleted');
+      setDeleteTarget(null);
     } catch (err) {
       console.error('Delete error:', err.response?.data);
       toast.error('Failed to delete client');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -180,11 +187,23 @@ export default function Clients() {
               client={client}
               isLast={index === filteredClients.length - 1}
               onEdit={openEditModal}
-              onDelete={handleDelete}
+              onDelete={setDeleteTarget}
             />
           ))}
         </div>
       )}
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Client"
+        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        confirmText="Delete Client"
+        loading={deleting}
+        variant="danger"
+      />
 
       {/* Create / Edit Modal */}
       <Modal
