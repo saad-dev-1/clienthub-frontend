@@ -24,9 +24,11 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg-base/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-text-primary flex items-center justify-center">
-              <span className="text-bg-base font-semibold text-xs">K</span>
-            </div>
+            <img
+              src="/src/assets/logo.svg"
+              alt="Klient"
+              className="w-7 h-7 rounded-lg"
+            />
             <span className="text-sm font-semibold heading-tight">Klient</span>
           </Link>
 
@@ -98,7 +100,6 @@ export default function Home() {
 
       {/* ============ HERO ============ */}
       <section className="relative pt-32 pb-20 px-6 overflow-hidden">
-        {/* Radial glow */}
         <div className="absolute inset-0 -z-10 pointer-events-none">
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full opacity-[0.15]"
@@ -110,7 +111,6 @@ export default function Home() {
           />
         </div>
 
-        {/* Subtle grid pattern */}
         <div
           className="absolute inset-0 -z-10 opacity-[0.15] pointer-events-none"
           style={{
@@ -125,11 +125,10 @@ export default function Home() {
 
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-12 gap-12 items-center">
-            {/* Left — Text */}
             <div className="md:col-span-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-6">
                 <Sparkles size={12} strokeWidth={2} className="text-accent" />
-                <span>Public share links — built in</span>
+                <span>Public share links, built in</span>
               </div>
 
               <h1 className="text-5xl md:text-6xl heading-tightest mb-6 leading-[1.05]">
@@ -142,7 +141,7 @@ export default function Home() {
 
               <p className="text-lg text-text-body mb-8 leading-relaxed max-w-lg">
                 Turn projects, files, and invoices into one clean, shareable
-                link. Your client opens it — no login, no emails, no chaos.
+                link. Your client opens it, no login, no emails, no chaos.
               </p>
 
               <div className="flex items-center gap-3 mb-6">
@@ -162,14 +161,12 @@ export default function Home() {
               </div>
 
               <p className="text-xs text-text-subtle">
-                No credit card required · Free forever
+                No credit card required. Free forever.
               </p>
             </div>
 
-            {/* Right — Product Mockup */}
             <div className="md:col-span-6">
               <div className="relative">
-                {/* Glow behind mockup */}
                 <div
                   className="absolute -inset-8 -z-10 rounded-full opacity-40"
                   style={{
@@ -179,7 +176,6 @@ export default function Home() {
                   }}
                 />
 
-                {/* Browser frame */}
                 <div className="rounded-2xl border border-border bg-bg-card overflow-hidden shadow-modal">
                   <div className="h-9 border-b border-border bg-bg-hover flex items-center gap-1.5 px-4">
                     <div className="w-2.5 h-2.5 rounded-full bg-danger/40" />
@@ -197,11 +193,11 @@ export default function Home() {
                   <div className="flex h-80">
                     <div className="w-32 border-r border-border p-3 space-y-0.5 bg-bg-base/50">
                       <div className="flex items-center gap-2 px-2 py-1.5 mb-3">
-                        <div className="w-5 h-5 rounded bg-text-primary flex items-center justify-center">
-                          <span className="text-bg-base font-semibold text-[8px]">
-                            K
-                          </span>
-                        </div>
+                        <img
+                          src="/src/assets/logo.svg"
+                          alt="Klient"
+                          className="w-5 h-5 rounded"
+                        />
                         <span className="text-[10px] font-semibold">
                           Klient
                         </span>
@@ -229,10 +225,10 @@ export default function Home() {
                     <div className="flex-1 p-4 space-y-4">
                       <div>
                         <div className="text-sm font-semibold heading-tight mb-0.5">
-                          Good morning, Saad 👋
+                          Good morning, Saad
                         </div>
                         <div className="text-[10px] text-text-subtle">
-                          Here's what's happening today.
+                          Here&apos;s what&apos;s happening today.
                         </div>
                       </div>
 
@@ -372,7 +368,7 @@ export default function Home() {
               <span>Features</span>
             </div>
             <h2 className="text-4xl md:text-5xl heading-tightest mb-4">
-              Everything you need. Nothing you don't.
+              Everything you need. Nothing you don&apos;t.
             </h2>
             <p className="text-text-body text-lg">
               Simple enough to start today. Powerful enough to run your
@@ -389,8 +385,8 @@ export default function Home() {
                 Public share links
               </h3>
               <p className="text-sm text-text-body leading-relaxed mb-6 max-w-lg">
-                Send your client a link. They see progress, tasks, and files —
-                no account required. The simplest client portal ever made.
+                Send your client a link. They see progress, tasks, and files
+                with no account required. The simplest client portal ever made.
               </p>
 
               <div className="rounded-lg border border-border bg-bg-base p-3 flex items-center gap-3">
@@ -451,7 +447,7 @@ export default function Home() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold heading-tight mb-2">
-                    Insights & analytics
+                    Insights and analytics
                   </h3>
                   <p className="text-sm text-text-body leading-relaxed">
                     See revenue, active projects, and what needs attention. All
@@ -648,11 +644,11 @@ export default function Home() {
           <div className="grid md:grid-cols-5 gap-8 mb-10">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-6 h-6 rounded-md bg-text-primary flex items-center justify-center">
-                  <span className="text-bg-base font-semibold text-[10px]">
-                    K
-                  </span>
-                </div>
+                <img
+                  src="/src/assets/logo.svg"
+                  alt="Klient"
+                  className="w-6 h-6 rounded-md"
+                />
                 <span className="text-sm font-semibold heading-tight">
                   Klient
                 </span>
@@ -662,7 +658,7 @@ export default function Home() {
                 time.
               </p>
               <p className="text-xs text-text-subtle mt-4">
-                Made in Pakistan 🇵🇰
+                Made in Pakistan
               </p>
             </div>
 

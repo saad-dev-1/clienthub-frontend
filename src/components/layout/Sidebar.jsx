@@ -45,9 +45,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between gap-2 px-5 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-text-primary flex items-center justify-center">
-              <span className="text-bg-base font-semibold text-xs">K</span>
-            </div>
+            <img src="/src/assets/logo.svg" alt="Klient" className="w-7 h-7 rounded-lg" />
             <span className="text-sm font-semibold heading-tight">
               Klient
             </span>

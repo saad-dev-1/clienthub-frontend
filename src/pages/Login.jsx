@@ -33,9 +33,11 @@ export default function Login() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">K</span>
-          </div>
+          <img
+            src="/src/assets/logo.svg"
+            alt="Klient"
+            className="w-8 h-8 rounded-lg"
+          />
           <span className="text-lg font-semibold text-text-primary">
             Klient
           </span>
@@ -87,7 +89,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input"
-                placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢"
+                placeholder="Password"
                 required
                 autoComplete="current-password"
               />
@@ -103,7 +105,7 @@ export default function Login() {
           </form>
 
           <p className="text-sm text-text-muted text-center mt-6">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link
               to="/register"
               className="text-accent hover:text-accent-hover font-medium transition-colors"

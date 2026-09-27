@@ -101,9 +101,7 @@ export default function PublicProject() {
       <header className="border-b border-border">
         <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
-              <span className="text-white font-semibold text-xs">K</span>
-            </div>
+            <img src="/src/assets/logo.svg" alt="Klient" className="w-7 h-7 rounded-lg" />
             <span className="text-sm font-semibold text-text-primary">
               Klient
             </span>
@@ -249,7 +247,7 @@ export default function PublicProject() {
             to="/register"
             className="text-xs text-accent hover:text-accent-hover font-medium mt-1 inline-block"
           >
-            Get started with Klient Ã¢â€ â€™
+            Get started with Klient ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
           </Link>
         </div>
       </main>

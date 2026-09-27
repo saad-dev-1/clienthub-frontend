@@ -64,9 +64,7 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-bg-base flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">K</span>
-          </div>
+          <img src="/src/assets/logo.svg" alt="Klient" className="w-8 h-8 rounded-lg" />
           <span className="text-lg font-semibold text-text-primary">
             Klient
           </span>
