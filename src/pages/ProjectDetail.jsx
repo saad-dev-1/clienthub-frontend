@@ -53,18 +53,17 @@ export default function ProjectDetail() {
     setLoading(true);
     setError(null);
 
-    console.log('Fetching project ID:', id);
-
     try {
-      // Project fetch karo
       let projectData = null;
       try {
         const res = await projectsApi.get(id);
-        console.log('Project API response:', res);
-        // Defensive: unwrap if wrapped in .data
         projectData = res?.data?.id ? res.data : res;
       } catch (projErr) {
-        console.error('Project fetch failed:', projErr.response?.status, projErr.response?.data);
+        console.error(
+          'Project fetch failed:',
+          projErr.response?.status,
+          projErr.response?.data
+        );
         setError(
           projErr.response?.status === 404
             ? 'Project not found. It may have been deleted.'
@@ -74,11 +73,9 @@ export default function ProjectDetail() {
         return;
       }
 
-      // Tasks fetch karo
       let tasksData = [];
       try {
         const tRes = await tasksApi.list(id);
-        console.log('Tasks API response:', tRes);
         tasksData = Array.isArray(tRes) ? tRes : tRes?.data || [];
       } catch (taskErr) {
         console.error('Tasks fetch failed:', taskErr.response?.data);
@@ -150,7 +147,6 @@ export default function ProjectDetail() {
     );
   }
 
-  // Fallback: error ya project missing
   if (error || !project) {
     return (
       <div className="text-center py-16">
@@ -159,9 +155,6 @@ export default function ProjectDetail() {
         </h2>
         <p className="text-sm text-text-muted mb-4">
           Project ID: <code className="text-accent">{id}</code>
-        </p>
-        <p className="text-xs text-text-subtle mb-6">
-          Console (F12) mein detailed logs dekho
         </p>
         <Link to="/projects" className="btn-primary inline-flex">
           Back to Projects
@@ -189,12 +182,12 @@ export default function ProjectDetail() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-semibold text-text-primary mb-1">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xl sm:text-2xl font-semibold text-text-primary mb-1 truncate">
             {project.name || 'Untitled Project'}
           </h2>
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-text-muted truncate">
             {project.client?.name || 'No client'} • Due{' '}
             {project.deadline
               ? new Date(project.deadline).toLocaleDateString('en-US', {
@@ -205,11 +198,11 @@ export default function ProjectDetail() {
               : '—'}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <ShareButton project={project} onUpdate={setProject} />
           <button
             onClick={() => setIsModalOpen(true)}
-            className="btn-primary"
+            className="btn-primary flex-1 sm:flex-none justify-center"
           >
             <Plus size={16} strokeWidth={2} />
             Add Task
@@ -262,11 +255,11 @@ export default function ProjectDetail() {
             return (
               <div
                 key={task.id}
-                className="flex items-center gap-3 p-3 hover:bg-bg-hover transition-colors group"
+                className="flex items-start gap-3 p-4 hover:bg-bg-hover transition-colors group"
               >
                 <button
                   onClick={() => toggleTaskStatus(task)}
-                  className={`flex-shrink-0 ${
+                  className={`flex-shrink-0 mt-0.5 ${
                     statusColor[task.status] || 'text-text-subtle'
                   } hover:scale-110 transition-transform`}
                   title="Click to change status"
@@ -295,9 +288,11 @@ export default function ProjectDetail() {
                   )}
                 </div>
 
+                {/* Delete — always visible on mobile, hover on desktop */}
                 <button
                   onClick={() => deleteTask(task.id)}
-                  className="p-1.5 rounded-lg text-text-subtle hover:text-danger hover:bg-danger/10 transition-colors opacity-0 group-hover:opacity-100"
+                  className="p-1.5 rounded-lg text-text-subtle hover:text-danger hover:bg-danger/10 transition-colors sm:opacity-0 sm:group-hover:opacity-100 flex-shrink-0"
+                  title="Delete task"
                 >
                   <Trash2 size={14} strokeWidth={1.75} />
                 </button>

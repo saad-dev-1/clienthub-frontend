@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import Sidebar from './Sidebar';
@@ -5,6 +6,7 @@ import Topbar from './Topbar';
 
 export default function AppLayout({ title }) {
   const { user, loading } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (loading) {
     return (
@@ -20,10 +22,15 @@ export default function AppLayout({ title }) {
 
   return (
     <div className="min-h-screen bg-bg-base">
-      <Sidebar />
-      <div className="ml-60">
-        <Topbar title={title} />
-        <main className="p-6 max-w-[1200px]">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Content area — mobile pe full width, desktop pe 240px offset */}
+      <div className="lg:ml-60">
+        <Topbar
+          title={title}
+          onMenuClick={() => setSidebarOpen(true)}
+        />
+        <main className="p-4 sm:p-6 max-w-[1200px]">
           <Outlet />
         </main>
       </div>

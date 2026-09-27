@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Mail,
   Phone,
-  Building2,
   FolderKanban,
   Loader2,
   Calendar,
@@ -90,16 +89,18 @@ export default function ClientDetail() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-start gap-4 mb-8">
-        <div className="w-16 h-16 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-lg font-semibold flex-shrink-0">
+      <div className="flex items-start gap-3 sm:gap-4 mb-8">
+        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-sm sm:text-lg font-semibold flex-shrink-0">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-semibold text-text-primary mb-1">
+          <h2 className="text-xl sm:text-2xl font-semibold text-text-primary mb-1 truncate">
             {client.name}
           </h2>
           {client.company && (
-            <p className="text-sm text-text-muted">{client.company}</p>
+            <p className="text-sm text-text-muted truncate">
+              {client.company}
+            </p>
           )}
         </div>
       </div>
@@ -108,12 +109,12 @@ export default function ClientDetail() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="card">
           <div className="flex items-center gap-3">
-            <Mail size={16} strokeWidth={1.75} className="text-text-subtle" />
-            <div>
+            <Mail size={16} strokeWidth={1.75} className="text-text-subtle flex-shrink-0" />
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-text-subtle uppercase tracking-wide">
                 Email
               </p>
-              <p className="text-sm text-text-primary mt-0.5">
+              <p className="text-sm text-text-primary mt-0.5 truncate">
                 {client.email || '—'}
               </p>
             </div>
@@ -122,12 +123,12 @@ export default function ClientDetail() {
 
         <div className="card">
           <div className="flex items-center gap-3">
-            <Phone size={16} strokeWidth={1.75} className="text-text-subtle" />
-            <div>
+            <Phone size={16} strokeWidth={1.75} className="text-text-subtle flex-shrink-0" />
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-text-subtle uppercase tracking-wide">
                 Phone
               </p>
-              <p className="text-sm text-text-primary mt-0.5">
+              <p className="text-sm text-text-primary mt-0.5 truncate">
                 {client.phone || '—'}
               </p>
             </div>
@@ -169,20 +170,20 @@ export default function ClientDetail() {
                 to={`/projects/${project.id}`}
                 className="block card p-4 hover:border-border-strong transition-colors"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-primary">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-medium text-text-primary truncate">
                       {project.name}
                     </span>
                     <span
-                      className={
+                      className={`${
                         statusStyles[project.status] || 'badge-neutral'
-                      }
+                      } flex-shrink-0`}
                     >
                       {(project.status || 'active').replace('_', ' ')}
                     </span>
                   </div>
-                  <span className="text-xs text-text-muted tabular-nums">
+                  <span className="text-xs text-text-muted tabular-nums flex-shrink-0">
                     {project.progress || 0}%
                   </span>
                 </div>

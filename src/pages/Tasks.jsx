@@ -87,6 +87,7 @@ export default function Tasks() {
 
   return (
     <div>
+      {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-text-primary">Tasks</h2>
         <p className="text-sm text-text-muted mt-1">
@@ -94,6 +95,7 @@ export default function Tasks() {
         </p>
       </div>
 
+      {/* Search */}
       <div className="relative mb-4">
         <Search
           size={16}
@@ -109,12 +111,13 @@ export default function Tasks() {
         />
       </div>
 
-      <div className="flex items-center gap-2 mb-4 overflow-x-auto">
+      {/* Filters */}
+      <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 -mx-1 px-1">
         {filters.map((f) => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap flex-shrink-0 ${
               filter === f.key
                 ? 'bg-accent-subtle text-accent'
                 : 'text-text-muted hover:text-text-primary hover:bg-bg-hover'
@@ -128,6 +131,7 @@ export default function Tasks() {
         ))}
       </div>
 
+      {/* Task List */}
       {loading ? (
         <div className="card flex items-center justify-center py-12">
           <Loader2 size={20} className="text-text-muted animate-spin" />
@@ -153,11 +157,11 @@ export default function Tasks() {
             return (
               <div
                 key={task.id}
-                className="flex items-center gap-3 p-4 hover:bg-bg-hover transition-colors"
+                className="flex items-start gap-3 p-4 hover:bg-bg-hover transition-colors"
               >
                 <button
                   onClick={() => toggleStatus(task)}
-                  className={`flex-shrink-0 ${
+                  className={`flex-shrink-0 mt-0.5 ${
                     statusColor[task.status] || 'text-text-subtle'
                   } hover:scale-110 transition-transform`}
                   title="Click to change status"
@@ -175,14 +179,17 @@ export default function Tasks() {
                   >
                     {task.title}
                   </p>
-                  <div className="flex items-center gap-3 mt-0.5">
+
+                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                     {task.project && (
                       <Link
                         to={`/projects/${task.project.id}`}
                         className="text-xs text-text-muted hover:text-accent transition-colors flex items-center gap-1"
                       >
                         <FolderKanban size={11} strokeWidth={1.75} />
-                        {task.project.name}
+                        <span className="truncate max-w-[150px]">
+                          {task.project.name}
+                        </span>
                       </Link>
                     )}
                     {task.due_date && (
@@ -195,16 +202,32 @@ export default function Tasks() {
                       </span>
                     )}
                   </div>
+
+                  {/* Status badge — visible on mobile below */}
+                  <div className="sm:hidden mt-2">
+                    <span
+                      className={
+                        task.status === 'done'
+                          ? 'badge-success'
+                          : task.status === 'doing'
+                          ? 'badge-warning'
+                          : 'badge-neutral'
+                      }
+                    >
+                      {task.status.replace('_', ' ')}
+                    </span>
+                  </div>
                 </div>
 
+                {/* Status badge — desktop right side */}
                 <span
-                  className={
+                  className={`hidden sm:inline-flex flex-shrink-0 ${
                     task.status === 'done'
                       ? 'badge-success'
                       : task.status === 'doing'
                       ? 'badge-warning'
                       : 'badge-neutral'
-                  }
+                  }`}
                 >
                   {task.status.replace('_', ' ')}
                 </span>

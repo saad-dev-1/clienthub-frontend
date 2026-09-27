@@ -176,7 +176,7 @@ export default function Invoices() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-text-primary">
             Invoices
@@ -185,7 +185,7 @@ export default function Invoices() {
             Create and track your invoices
           </p>
         </div>
-        <button onClick={openCreateModal} className="btn-primary">
+        <button onClick={openCreateModal} className="btn-primary w-full sm:w-auto justify-center">
           <Plus size={16} strokeWidth={2} />
           New Invoice
         </button>
@@ -202,7 +202,7 @@ export default function Invoices() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by invoice number or client..."
+          placeholder="Search invoices..."
           className="input pl-9"
         />
       </div>
@@ -274,7 +274,7 @@ export default function Invoices() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="label">Issue Date *</label>
               <input
@@ -315,14 +315,14 @@ export default function Invoices() {
 
             <div className="space-y-2">
               {form.items.map((item, index) => (
-                <div key={index} className="flex items-start gap-2">
+                <div key={index} className="flex flex-wrap items-start gap-2">
                   <input
                     type="text"
                     value={item.description}
                     onChange={(e) =>
                       updateItem(index, 'description', e.target.value)
                     }
-                    className="input flex-1 text-xs"
+                    className="input flex-1 min-w-[120px] text-xs"
                     placeholder="Description"
                     required
                   />
@@ -418,15 +418,17 @@ function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
     : '—';
 
   return (
-    <div className="flex items-center gap-4 p-4 hover:bg-bg-hover transition-colors group">
-      <div className="flex items-center gap-4 flex-1 min-w-0">
-        <div className="w-10 h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
-          <FileText size={18} strokeWidth={1.75} className="text-accent" />
+    <div className="p-3 sm:p-4 hover:bg-bg-hover transition-colors group">
+      <div className="flex items-start gap-3">
+        {/* Icon */}
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
+          <FileText size={16} strokeWidth={1.75} className="text-accent" />
         </div>
 
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-sm font-medium text-text-primary">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-medium text-text-primary whitespace-nowrap">
               {invoice.number}
             </span>
             <span className={statusStyles[invoice.status] || 'badge-neutral'}>
@@ -438,39 +440,69 @@ function InvoiceRow({ invoice, onDelete, onMarkPaid, onDownload }) {
           </p>
         </div>
 
-        <div className="text-right">
-          <p className="text-sm font-semibold text-text-primary tabular-nums">
+        {/* Total + desktop actions */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <p className="text-sm font-semibold text-text-primary tabular-nums whitespace-nowrap">
             ${formattedTotal}
           </p>
+
+          {/* Desktop hover actions */}
+          <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={() => onDownload(invoice)}
+              className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent/10 transition-colors"
+              title="Download PDF"
+            >
+              <Download size={14} strokeWidth={1.75} />
+            </button>
+
+            {invoice.status !== 'paid' && (
+              <button
+                onClick={() => onMarkPaid(invoice)}
+                className="p-1.5 rounded-lg text-text-muted hover:text-success hover:bg-success/10 transition-colors"
+                title="Mark as paid"
+              >
+                <CheckCircle2 size={14} strokeWidth={1.75} />
+              </button>
+            )}
+
+            <button
+              onClick={() => onDelete(invoice)}
+              className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
+              title="Delete"
+            >
+              <Trash2 size={14} strokeWidth={1.75} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Mobile actions — full width row below */}
+      <div className="flex sm:hidden items-center gap-2 mt-3 pl-12">
         <button
           onClick={() => onDownload(invoice)}
-          className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent/10 transition-colors"
-          title="Download PDF"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-accent hover:border-accent/30 hover:bg-accent/5 transition-colors"
         >
-          <Download size={14} strokeWidth={1.75} />
+          <Download size={13} strokeWidth={1.75} />
+          PDF
         </button>
 
         {invoice.status !== 'paid' && (
           <button
             onClick={() => onMarkPaid(invoice)}
-            className="p-1.5 rounded-lg text-text-muted hover:text-success hover:bg-success/10 transition-colors"
-            title="Mark as paid"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-success hover:border-success/30 hover:bg-success/5 transition-colors"
           >
-            <CheckCircle2 size={14} strokeWidth={1.75} />
+            <CheckCircle2 size={13} strokeWidth={1.75} />
+            Paid
           </button>
         )}
 
         <button
           onClick={() => onDelete(invoice)}
-          className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
-          title="Delete"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-danger hover:border-danger/30 hover:bg-danger/5 transition-colors"
         >
-          <Trash2 size={14} strokeWidth={1.75} />
+          <Trash2 size={13} strokeWidth={1.75} />
+          Delete
         </button>
       </div>
     </div>

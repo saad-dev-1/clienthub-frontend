@@ -9,7 +9,7 @@ export default function Settings() {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <h2 className="text-2xl font-semibold text-text-primary">
           Settings
         </h2>
@@ -18,7 +18,7 @@ export default function Settings() {
         </p>
       </div>
 
-      <div className="space-y-6 max-w-2xl">
+      <div className="space-y-4 sm:space-y-6 max-w-2xl">
         <ProfileSection user={user} />
         <PasswordSection />
       </div>
@@ -38,14 +38,12 @@ function ProfileSection({ user }) {
       await settingsApi.updateProfile({ name, email });
       toast.success('Profile updated');
 
-      // Update localStorage so sidebar shows new name
       const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
       localStorage.setItem(
         'user',
         JSON.stringify({ ...savedUser, name, email })
       );
 
-      // Reload to reflect changes
       window.location.reload();
     } catch (err) {
       const errors = err.response?.data?.errors;
@@ -64,7 +62,7 @@ function ProfileSection({ user }) {
         <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
           <User size={18} strokeWidth={1.75} className="text-accent" />
         </div>
-        <div>
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-text-primary">
             Profile Information
           </h3>
@@ -103,7 +101,7 @@ function ProfileSection({ user }) {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary"
+            className="btn-primary w-full sm:w-auto justify-center"
           >
             {loading ? (
               <>
@@ -163,7 +161,7 @@ function PasswordSection() {
         <div className="w-9 h-9 rounded-lg bg-accent-subtle flex items-center justify-center flex-shrink-0">
           <Lock size={18} strokeWidth={1.75} className="text-accent" />
         </div>
-        <div>
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-text-primary">
             Change Password
           </h3>
@@ -217,7 +215,7 @@ function PasswordSection() {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary"
+            className="btn-primary w-full sm:w-auto justify-center"
           >
             {loading ? (
               <>

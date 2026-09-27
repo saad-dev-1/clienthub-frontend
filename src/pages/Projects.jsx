@@ -145,7 +145,7 @@ export default function Projects() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-text-primary">
             Projects
@@ -154,7 +154,10 @@ export default function Projects() {
             Track all your ongoing work in one place
           </p>
         </div>
-        <button onClick={openCreateModal} className="btn-primary">
+        <button
+          onClick={openCreateModal}
+          className="btn-primary w-full sm:w-auto justify-center"
+        >
           <Plus size={16} strokeWidth={2} />
           New Project
         </button>
@@ -348,21 +351,23 @@ function ProjectCard({ project, onEdit, onDelete }) {
     <div className="card hover:border-border-strong transition-colors group relative">
       <Link
         to={`/projects/${project.id}`}
-        className="block cursor-pointer"
+        className="block cursor-pointer pr-16 sm:pr-0"
       >
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-sm font-semibold text-text-primary">
+        <div className="flex items-start justify-between gap-2 mb-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <h3 className="text-sm font-semibold text-text-primary truncate">
                 {project.name}
               </h3>
               <span
-                className={statusStyles[project.status] || 'badge-neutral'}
+                className={`${
+                  statusStyles[project.status] || 'badge-neutral'
+                } flex-shrink-0`}
               >
                 {(project.status || 'active').replace('_', ' ')}
               </span>
             </div>
-            <p className="text-xs text-text-muted">
+            <p className="text-xs text-text-muted truncate">
               {project.client?.name || 'No client'} • Due{' '}
               {project.deadline
                 ? new Date(project.deadline).toLocaleDateString('en-US', {
@@ -391,8 +396,8 @@ function ProjectCard({ project, onEdit, onDelete }) {
         </div>
       </Link>
 
-      {/* Action buttons — top-right corner, visible on hover */}
-      <div className="absolute top-4 right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Action buttons — always visible on mobile, hover on desktop */}
+      <div className="absolute top-4 right-4 flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <button
           onClick={(e) => {
             e.preventDefault();

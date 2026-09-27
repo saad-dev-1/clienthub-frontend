@@ -113,14 +113,17 @@ export default function Clients() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-text-primary">Clients</h2>
           <p className="text-sm text-text-muted mt-1">
             Manage your client relationships
           </p>
         </div>
-        <button onClick={openCreateModal} className="btn-primary">
+        <button
+          onClick={openCreateModal}
+          className="btn-primary w-full sm:w-auto justify-center"
+        >
           <Plus size={16} strokeWidth={2} />
           New Client
         </button>
@@ -278,40 +281,60 @@ function ClientRow({ client, onEdit, onDelete }) {
     .toUpperCase();
 
   return (
-    <div className="flex items-center gap-4 p-4 hover:bg-bg-hover transition-colors group">
-      <Link
-        to={`/clients/${client.id}`}
-        className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
-      >
-        <div className="w-10 h-10 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-xs font-semibold flex-shrink-0">
-          {initials}
-        </div>
+    <div className="p-4 hover:bg-bg-hover transition-colors">
+      <div className="flex items-center gap-3">
+        <Link
+          to={`/clients/${client.id}`}
+          className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
+        >
+          <div className="w-10 h-10 rounded-full bg-accent-subtle flex items-center justify-center text-accent text-xs font-semibold flex-shrink-0">
+            {initials}
+          </div>
 
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-text-primary truncate">
-            {client.name}
-          </p>
-          <p className="text-xs text-text-muted truncate">
-            {client.email || client.company || '—'}
-          </p>
-        </div>
-      </Link>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-text-primary truncate">
+              {client.name}
+            </p>
+            <p className="text-xs text-text-muted truncate">
+              {client.email || client.company || '—'}
+            </p>
+          </div>
+        </Link>
 
-      {/* Actions — visible on hover */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Desktop actions — hover only */}
+        <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            onClick={() => onEdit(client)}
+            className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card transition-colors"
+            title="Edit"
+          >
+            <Pencil size={14} strokeWidth={1.75} />
+          </button>
+          <button
+            onClick={() => onDelete(client)}
+            className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} strokeWidth={1.75} />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile actions row */}
+      <div className="flex sm:hidden items-center gap-2 mt-3 pl-13">
         <button
           onClick={() => onEdit(client)}
-          className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card transition-colors"
-          title="Edit"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-text-primary hover:border-border-strong transition-colors"
         >
-          <Pencil size={14} strokeWidth={1.75} />
+          <Pencil size={13} strokeWidth={1.75} />
+          Edit
         </button>
         <button
           onClick={() => onDelete(client)}
-          className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
-          title="Delete"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-danger hover:border-danger/30 hover:bg-danger/5 transition-colors"
         >
-          <Trash2 size={14} strokeWidth={1.75} />
+          <Trash2 size={13} strokeWidth={1.75} />
+          Delete
         </button>
       </div>
     </div>

@@ -57,7 +57,7 @@ export default function Dashboard() {
     <div>
       {/* Greeting */}
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-text-primary mb-1">
+        <h2 className="text-xl sm:text-2xl font-semibold text-text-primary mb-1">
           {greeting}, {firstName} 👋
         </h2>
         <p className="text-sm text-text-muted">
@@ -66,7 +66,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
         <StatCard
           label="Active Projects"
           value={data?.stats?.active_projects || 0}
@@ -121,31 +121,31 @@ export default function Dashboard() {
                 to={`/projects/${project.id}`}
                 className="block card p-4 hover:border-border-strong transition-colors"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-primary">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-medium text-text-primary truncate">
                       {project.name}
                     </span>
                     <span
-                      className={
+                      className={`${
                         statusStyles[project.status] || 'badge-neutral'
-                      }
+                      } flex-shrink-0`}
                     >
-                      {project.status.replace('_', ' ')}
+                      {(project.status || 'active').replace('_', ' ')}
                     </span>
                   </div>
-                  <span className="text-xs text-text-muted tabular-nums">
-                    {project.progress}%
+                  <span className="text-xs text-text-muted tabular-nums flex-shrink-0">
+                    {project.progress || 0}%
                   </span>
                 </div>
                 <div className="h-1.5 bg-bg-hover rounded-full overflow-hidden">
                   <div
                     className="h-full bg-accent transition-all duration-300"
-                    style={{ width: `${project.progress}%` }}
+                    style={{ width: `${project.progress || 0}%` }}
                   />
                 </div>
                 {project.client && (
-                  <p className="text-xs text-text-subtle mt-2">
+                  <p className="text-xs text-text-subtle mt-2 truncate">
                     Client: {project.client.name}
                   </p>
                 )}
@@ -160,14 +160,18 @@ export default function Dashboard() {
 
 function StatCard({ label, value, icon: Icon }) {
   return (
-    <div className="card">
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-text-subtle">
+    <div className="card p-4 sm:p-5">
+      <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+        <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wide text-text-subtle truncate">
           {label}
         </p>
-        <Icon size={16} strokeWidth={1.75} className="text-text-subtle" />
+        <Icon
+          size={14}
+          strokeWidth={1.75}
+          className="text-text-subtle flex-shrink-0"
+        />
       </div>
-      <p className="text-2xl font-semibold text-text-primary tabular-nums">
+      <p className="text-xl sm:text-2xl font-semibold text-text-primary tabular-nums">
         {value}
       </p>
     </div>
