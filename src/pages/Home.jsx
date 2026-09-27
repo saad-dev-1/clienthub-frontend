@@ -10,9 +10,14 @@ import {
   Users,
   Shield,
   Zap,
+  Sun,
+  Moon,
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Home() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="min-h-screen bg-bg-base text-text-primary">
       {/* ============ NAV ============ */}
@@ -47,6 +52,37 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
+              title={
+                theme === 'dark'
+                  ? 'Switch to light mode'
+                  : 'Switch to dark mode'
+              }
+            >
+              <span className="relative block w-4 h-4">
+                <Sun
+                  size={16}
+                  strokeWidth={1.75}
+                  className={`absolute inset-0 transition-all duration-300 ${
+                    theme === 'dark'
+                      ? 'opacity-100 rotate-0'
+                      : 'opacity-0 -rotate-90'
+                  }`}
+                />
+                <Moon
+                  size={16}
+                  strokeWidth={1.75}
+                  className={`absolute inset-0 transition-all duration-300 ${
+                    theme === 'light'
+                      ? 'opacity-100 rotate-0'
+                      : 'opacity-0 rotate-90'
+                  }`}
+                />
+              </span>
+            </button>
+
             <Link
               to="/login"
               className="text-sm text-text-muted hover:text-text-primary transition-colors px-3 py-1.5"
