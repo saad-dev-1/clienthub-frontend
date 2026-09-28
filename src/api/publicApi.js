@@ -11,4 +11,9 @@ const publicApi = axios.create({
 export const publicProjectsApi = {
   get: (token) =>
     publicApi.get(`/public/projects/${token}`).then((r) => r.data),
+
+  submitFeedback: (token, data) =>
+    publicApi
+      .post(`/public/projects/${token}/feedback`, data)
+      .then((r) => r.data),
 };

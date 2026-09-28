@@ -7,10 +7,14 @@ import {
   Clock,
   Loader2,
   FolderKanban,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { tasksApi } from '../api/tasks';
+import Modal from '../components/ui/Modal';
+import ConfirmModal from '../components/ui/ConfirmModal';
 import EmptyState from '../components/ui/EmptyState';
+import { tasksApi } from '../api/tasks';
 
 const statusIcon = {
   todo: Circle,
@@ -31,11 +35,24 @@ const filters = [
   { key: 'done', label: 'Completed' },
 ];
 
+const emptyForm = {
+  title: '',
+  description: '',
+  status: 'todo',
+  due_date: '',
+};
+
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -64,9 +81,80 @@ export default function Tasks() {
 
     try {
       const updated = await tasksApi.update(task.id, { status: nextStatus });
-      setTasks(tasks.map((t) => (t.id === task.id ? updated : t)));
+      setTasks(tasks.map((t) => (t.id === task.id ? { ...t, ...updated } : t)));
     } catch (err) {
       toast.error('Failed to update task');
+    }
+  };
+
+  const openEditModal = (task, e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setEditingTask(task);
+    setForm({
+      title: task.title || '',
+      description: task.description || '',
+      status: task.status || 'todo',
+      due_date: task.due_date ? task.due_date.split('T')[0] : '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingTask(null);
+    setForm(emptyForm);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingTask) return;
+    setSubmitting(true);
+    try {
+      const payload = {
+        title: form.title,
+        description: form.description || null,
+        status: form.status,
+        due_date: form.due_date || null,
+      };
+
+      const updated = await tasksApi.update(editingTask.id, payload);
+      setTasks(
+        tasks.map((t) => (t.id === editingTask.id ? { ...t, ...updated } : t))
+      );
+      toast.success('Task updated');
+      closeModal();
+    } catch (err) {
+      const errors = err.response?.data?.errors;
+      const message = errors
+        ? Object.values(errors)[0][0]
+        : 'Failed to update task';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteClick = (task, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDeleteTarget(task);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await tasksApi.delete(deleteTarget.id);
+      setTasks(tasks.filter((t) => t.id !== deleteTarget.id));
+      toast.success('Task deleted');
+      setDeleteTarget(null);
+    } catch (err) {
+      toast.error('Failed to delete task');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -161,7 +249,7 @@ export default function Tasks() {
             return (
               <div
                 key={task.id}
-                className={`flex items-start gap-3 p-4 hover:bg-bg-hover transition-colors ${
+                className={`group flex items-start gap-3 p-4 hover:bg-bg-hover transition-colors ${
                   index !== filtered.length - 1
                     ? 'border-b border-border'
                     : ''
@@ -187,6 +275,12 @@ export default function Tasks() {
                   >
                     {task.title}
                   </p>
+
+                  {task.description && (
+                    <p className="text-xs text-text-muted mt-1 line-clamp-2">
+                      {task.description}
+                    </p>
+                  )}
 
                   <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                     {task.project && (
@@ -238,11 +332,118 @@ export default function Tasks() {
                 >
                   {task.status.replace('_', ' ')}
                 </span>
+
+                {/* Actions — Desktop */}
+                <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                  <button
+                    onClick={(e) => openEditModal(task, e)}
+                    className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent-subtle transition-colors"
+                    title="Edit task"
+                  >
+                    <Pencil size={14} strokeWidth={1.75} />
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteClick(task, e)}
+                    className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/5 transition-colors"
+                    title="Delete task"
+                  >
+                    <Trash2 size={14} strokeWidth={1.75} />
+                  </button>
+                </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Edit Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title="Edit Task"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="label">Title *</label>
+            <input
+              type="text"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="input"
+              placeholder="Task title"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="label">Description</label>
+            <textarea
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              className="input min-h-[80px] resize-none"
+              placeholder="Optional details..."
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="label">Status</label>
+              <select
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="input"
+              >
+                <option value="todo">To Do</option>
+                <option value="doing">In Progress</option>
+                <option value="done">Completed</option>
+              </select>
+            </div>
+            <div>
+              <label className="label">Due Date</label>
+              <input
+                type="date"
+                value={form.due_date}
+                onChange={(e) =>
+                  setForm({ ...form, due_date: e.target.value })
+                }
+                className="input"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="btn-secondary flex-1"
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary flex-1"
+              disabled={submitting}
+            >
+              {submitting ? 'Updating...' : 'Update Task'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Task"
+        description={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        confirmText="Delete Task"
+        loading={deleting}
+        variant="danger"
+      />
     </div>
   );
 }

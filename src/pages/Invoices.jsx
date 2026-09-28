@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Plus,
   Search,
@@ -8,6 +8,7 @@ import {
   Loader2,
   CheckCircle2,
   Download,
+  Pencil,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Modal from '../components/ui/Modal';
@@ -15,12 +16,22 @@ import ConfirmModal from '../components/ui/ConfirmModal';
 import EmptyState from '../components/ui/EmptyState';
 import { invoicesApi } from '../api/invoices';
 import { clientsApi } from '../api/clients';
+import { useAuth } from '../context/useAuth';
 
 const statusStyles = {
   draft: 'badge-neutral',
   sent: 'badge-accent',
   paid: 'badge-success',
   overdue: 'badge-danger',
+};
+
+const CURRENCY_SYMBOLS = {
+  USD: '$',
+  PKR: 'Rs',
+  EUR: '€',
+  GBP: '£',
+  AED: 'AED',
+  INR: '₹',
 };
 
 const emptyItem = { description: '', quantity: 1, rate: 0 };
@@ -34,12 +45,20 @@ const emptyForm = {
 };
 
 export default function Invoices() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const currencySymbol =
+    CURRENCY_SYMBOLS[user?.currency || 'USD'] || '$';
+
   const [invoices, setInvoices] = useState([]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -47,6 +66,20 @@ export default function Invoices() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Handle navigation from detail page with edit request
+  useEffect(() => {
+    if (location.state?.editInvoiceId && invoices.length > 0) {
+      const target = invoices.find(
+        (inv) => inv.id === location.state.editInvoiceId
+      );
+      if (target) {
+        openEditModal(target);
+      }
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoices, location.state]);
 
   const fetchData = async () => {
     try {
@@ -79,8 +112,36 @@ export default function Invoices() {
   });
 
   const openCreateModal = () => {
+    setEditingInvoice(null);
     setForm(emptyForm);
     setIsModalOpen(true);
+  };
+
+  const openEditModal = (invoice) => {
+    setEditingInvoice(invoice);
+    setForm({
+      client_id: invoice.client_id || '',
+      issue_date: invoice.issue_date
+        ? invoice.issue_date.split('T')[0]
+        : '',
+      due_date: invoice.due_date ? invoice.due_date.split('T')[0] : '',
+      notes: invoice.notes || '',
+      items:
+        invoice.items && invoice.items.length > 0
+          ? invoice.items.map((item) => ({
+              description: item.description,
+              quantity: item.quantity,
+              rate: item.rate,
+            }))
+          : [{ ...emptyItem }],
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingInvoice(null);
+    setForm(emptyForm);
   };
 
   const addItem = () => {
@@ -126,17 +187,26 @@ export default function Invoices() {
         })),
       };
 
-      const newInvoice = await invoicesApi.create(payload);
-      setInvoices([newInvoice, ...invoices]);
-      setIsModalOpen(false);
-      setForm(emptyForm);
-      toast.success('Invoice created');
+      if (editingInvoice) {
+        const updated = await invoicesApi.update(editingInvoice.id, payload);
+        setInvoices(
+          invoices.map((i) => (i.id === editingInvoice.id ? updated : i))
+        );
+        toast.success('Invoice updated');
+      } else {
+        const newInvoice = await invoicesApi.create(payload);
+        setInvoices([newInvoice, ...invoices]);
+        toast.success('Invoice created');
+      }
+
+      closeModal();
     } catch (err) {
-      console.error('Create error:', err.response?.data);
+      console.error('Submit error:', err.response?.data);
       const errors = err.response?.data?.errors;
       const message = errors
         ? Object.values(errors)[0][0]
-        : err.response?.data?.message || 'Failed to create invoice';
+        : err.response?.data?.message ||
+          `Failed to ${editingInvoice ? 'update' : 'create'} invoice`;
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -147,6 +217,12 @@ export default function Invoices() {
     e.preventDefault();
     e.stopPropagation();
     setDeleteTarget(invoice);
+  };
+
+  const handleEditClick = (invoice, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openEditModal(invoice);
   };
 
   const handleDeleteConfirm = async () => {
@@ -259,7 +335,9 @@ export default function Invoices() {
               key={invoice.id}
               invoice={invoice}
               isLast={index === filtered.length - 1}
+              currencySymbol={currencySymbol}
               onDelete={handleDeleteClick}
+              onEdit={handleEditClick}
               onMarkPaid={handleMarkPaid}
               onDownload={handleDownload}
             />
@@ -279,14 +357,11 @@ export default function Invoices() {
         variant="danger"
       />
 
-      {/* Create Modal */}
+      {/* Create/Edit Modal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setForm(emptyForm);
-        }}
-        title="New Invoice"
+        onClose={closeModal}
+        title={editingInvoice ? 'Edit Invoice' : 'New Invoice'}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -399,7 +474,7 @@ export default function Invoices() {
             <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
               <span className="text-sm text-text-muted">Total</span>
               <span className="text-lg font-semibold text-text-primary tabular-nums heading-tight">
-                ${total.toFixed(2)}
+                {currencySymbol} {total.toFixed(2)}
               </span>
             </div>
           </div>
@@ -417,10 +492,7 @@ export default function Invoices() {
           <div className="flex gap-3 pt-2">
             <button
               type="button"
-              onClick={() => {
-                setIsModalOpen(false);
-                setForm(emptyForm);
-              }}
+              onClick={closeModal}
               className="btn-secondary flex-1"
               disabled={submitting}
             >
@@ -431,7 +503,13 @@ export default function Invoices() {
               className="btn-primary flex-1"
               disabled={submitting}
             >
-              {submitting ? 'Creating...' : 'Create Invoice'}
+              {submitting
+                ? editingInvoice
+                  ? 'Updating...'
+                  : 'Creating...'
+                : editingInvoice
+                ? 'Update Invoice'
+                : 'Create Invoice'}
             </button>
           </div>
         </form>
@@ -440,7 +518,15 @@ export default function Invoices() {
   );
 }
 
-function InvoiceRow({ invoice, isLast, onDelete, onMarkPaid, onDownload }) {
+function InvoiceRow({
+  invoice,
+  isLast,
+  currencySymbol,
+  onDelete,
+  onEdit,
+  onMarkPaid,
+  onDownload,
+}) {
   const formattedTotal = parseFloat(invoice.total || 0).toFixed(2);
   const formattedDue = invoice.due_date
     ? new Date(invoice.due_date).toLocaleDateString('en-US', {
@@ -481,17 +567,25 @@ function InvoiceRow({ invoice, isLast, onDelete, onMarkPaid, onDownload }) {
           </div>
 
           <p className="text-sm font-semibold text-text-primary tabular-nums whitespace-nowrap hidden sm:block">
-            ${formattedTotal}
+            {currencySymbol} {formattedTotal}
           </p>
         </Link>
 
         {/* Mobile total */}
         <p className="text-sm font-semibold text-text-primary tabular-nums whitespace-nowrap sm:hidden">
-          ${formattedTotal}
+          {currencySymbol} {formattedTotal}
         </p>
 
         {/* Desktop actions */}
         <div className="hidden sm:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <button
+            onClick={(e) => onEdit(invoice, e)}
+            className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent-subtle transition-colors"
+            title="Edit"
+          >
+            <Pencil size={14} strokeWidth={1.75} />
+          </button>
+
           <button
             onClick={(e) => onDownload(invoice, e)}
             className="p-1.5 rounded-lg text-text-muted hover:text-accent hover:bg-accent-subtle transition-colors"
@@ -522,6 +616,14 @@ function InvoiceRow({ invoice, isLast, onDelete, onMarkPaid, onDownload }) {
 
       {/* Mobile actions */}
       <div className="flex sm:hidden items-center gap-2 mt-3 pl-13">
+        <button
+          onClick={(e) => onEdit(invoice, e)}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-accent hover:border-accent/30 transition-colors"
+        >
+          <Pencil size={13} strokeWidth={1.75} />
+          Edit
+        </button>
+
         <button
           onClick={(e) => onDownload(invoice, e)}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium text-text-muted border border-border hover:text-accent hover:border-accent/30 transition-colors"

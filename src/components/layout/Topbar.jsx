@@ -2,9 +2,21 @@ import { Menu, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
 import { useTheme } from '../../context/ThemeContext';
 
+const CURRENCY_SYMBOLS = {
+  USD: '$',
+  PKR: 'Rs',
+  EUR: '€',
+  GBP: '£',
+  AED: 'AED',
+  INR: '₹',
+};
+
 export default function Topbar({ title, onMenuClick }) {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+
+  const currencyCode = user?.currency || 'USD';
+  const currencySymbol = CURRENCY_SYMBOLS[currencyCode] || '$';
 
   return (
     <header className="h-16 bg-bg-base/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
@@ -22,6 +34,15 @@ export default function Topbar({ title, onMenuClick }) {
       </div>
 
       <div className="flex items-center gap-1.5">
+        {/* Currency Badge */}
+        <span
+          className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent-subtle text-accent text-xs font-semibold"
+          title={`Currency: ${currencyCode}`}
+        >
+          <span>{currencySymbol}</span>
+          <span>{currencyCode}</span>
+        </span>
+
         <button
           onClick={toggleTheme}
           className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors relative"

@@ -10,9 +10,11 @@ import {
   Calendar,
   User,
   AlertTriangle,
+  Pencil,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { invoicesApi } from '../api/invoices';
+import { useAuth } from '../context/useAuth';
 
 const statusStyles = {
   draft: 'badge-neutral',
@@ -21,9 +23,23 @@ const statusStyles = {
   overdue: 'badge-danger',
 };
 
+const CURRENCY_SYMBOLS = {
+  USD: '$',
+  PKR: 'Rs',
+  EUR: '€',
+  GBP: '£',
+  AED: 'AED',
+  INR: '₹',
+};
+
 export default function InvoiceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const currencySymbol =
+    CURRENCY_SYMBOLS[user?.currency || 'USD'] || '$';
+
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,6 +100,10 @@ export default function InvoiceDetail() {
       toast.error('Failed to delete invoice');
       setDeleting(false);
     }
+  };
+
+  const handleEdit = () => {
+    navigate('/invoices', { state: { editInvoiceId: invoice.id } });
   };
 
   if (loading) {
@@ -178,6 +198,13 @@ export default function InvoiceDetail() {
 
         {/* Actions */}
         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
+          <button
+            onClick={handleEdit}
+            className="btn-secondary justify-center"
+          >
+            <Pencil size={14} strokeWidth={2} />
+            Edit
+          </button>
           <button
             onClick={handleDownload}
             className="btn-secondary justify-center"
@@ -310,10 +337,10 @@ export default function InvoiceDetail() {
                       {parseFloat(item.quantity || 0)}
                     </td>
                     <td className="px-5 py-3 text-sm text-text-body text-right tabular-nums">
-                      ${parseFloat(item.rate || 0).toFixed(2)}
+                      {currencySymbol} {parseFloat(item.rate || 0).toFixed(2)}
                     </td>
                     <td className="px-5 py-3 text-sm text-text-primary font-medium text-right tabular-nums">
-                      ${parseFloat(item.amount || 0).toFixed(2)}
+                      {currencySymbol} {parseFloat(item.amount || 0).toFixed(2)}
                     </td>
                   </tr>
                 ))
@@ -328,7 +355,7 @@ export default function InvoiceDetail() {
               Total
             </p>
             <p className="text-2xl font-semibold heading-tight text-text-primary tabular-nums">
-              ${total.toFixed(2)}
+              {currencySymbol} {total.toFixed(2)}
             </p>
           </div>
         </div>
@@ -351,10 +378,11 @@ export default function InvoiceDetail() {
               </p>
               <div className="flex items-center justify-between text-xs text-text-muted">
                 <span className="tabular-nums">
-                  {parseFloat(item.quantity || 0)} × ${parseFloat(item.rate || 0).toFixed(2)}
+                  {parseFloat(item.quantity || 0)} × {currencySymbol}{' '}
+                  {parseFloat(item.rate || 0).toFixed(2)}
                 </span>
                 <span className="font-semibold text-text-primary tabular-nums">
-                  ${parseFloat(item.amount || 0).toFixed(2)}
+                  {currencySymbol} {parseFloat(item.amount || 0).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -364,7 +392,7 @@ export default function InvoiceDetail() {
         <div className="card flex items-center justify-between">
           <span className="text-sm text-text-muted">Total</span>
           <span className="text-xl font-semibold heading-tight text-text-primary tabular-nums">
-            ${total.toFixed(2)}
+            {currencySymbol} {total.toFixed(2)}
           </span>
         </div>
       </div>

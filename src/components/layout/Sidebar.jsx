@@ -20,8 +20,20 @@ const navItems = [
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
+const CURRENCY_SYMBOLS = {
+  USD: '$',
+  PKR: 'Rs',
+  EUR: '€',
+  GBP: '£',
+  AED: 'AED',
+  INR: '₹',
+};
+
 export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth();
+
+  const currencyCode = user?.currency || 'USD';
+  const currencySymbol = CURRENCY_SYMBOLS[currencyCode] || '$';
 
   return (
     <>
@@ -101,6 +113,18 @@ export default function Sidebar({ isOpen, onClose }) {
               </p>
             </div>
           </div>
+
+          {/* Currency Badge */}
+          <div className="px-3 pb-2">
+            <div className="flex items-center justify-between text-xs text-text-muted">
+              <span>Currency</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent-subtle text-accent text-[10px] font-semibold">
+                <span>{currencySymbol}</span>
+                <span>{currencyCode}</span>
+              </span>
+            </div>
+          </div>
+
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-danger hover:bg-danger/5 transition-colors mt-1"
