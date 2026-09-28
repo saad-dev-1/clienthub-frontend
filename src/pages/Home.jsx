@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import {
   FolderKanban,
   Link2,
@@ -25,7 +25,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <img
-              src="/src/assets/logo.svg"
+              src="/logo.svg"
               alt="Klient"
               className="w-7 h-7 rounded-lg"
             />
@@ -126,9 +126,9 @@ export default function Home() {
         />
 
         <div className="max-w-6xl mx-auto">
-          {/* Hero grid — split only at lg (1024px+) */}
+          {/* Hero grid â€” split only at lg (1024px+) */}
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left — Text */}
+            {/* Left â€” Text */}
             <div className="lg:col-span-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-card border border-border text-text-muted text-xs font-medium mb-6">
                 <Sparkles size={12} strokeWidth={2} className="text-accent" />
@@ -169,7 +169,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Right — Product Mockup */}
+            {/* Right â€” Product Mockup */}
             <div className="lg:col-span-6">
               <div className="relative max-w-lg mx-auto lg:max-w-none">
                 <div
@@ -201,7 +201,7 @@ export default function Home() {
                     <div className="w-28 sm:w-32 border-r border-border p-2 sm:p-3 space-y-0.5 bg-bg-base/50 flex-shrink-0">
                       <div className="flex items-center gap-2 px-2 py-1.5 mb-3">
                         <img
-                          src="/src/assets/logo.svg"
+                          src="/logo.svg"
                           alt="Klient"
                           className="w-5 h-5 rounded flex-shrink-0"
                         />
@@ -240,7 +240,7 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* Stats — perfectly responsive */}
+                      {/* Stats â€” perfectly responsive */}
                       <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                         {[
                           { label: 'PROJECTS', value: '8' },
@@ -655,7 +655,7 @@ export default function Home() {
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-3">
                 <img
-                  src="/src/assets/logo.svg"
+                  src="/logo.svg"
                   alt="Klient"
                   className="w-6 h-6 rounded-md"
                 />
@@ -729,7 +729,7 @@ export default function Home() {
 
           <div className="pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-3">
             <p className="text-xs text-text-subtle">
-              © 2026 Klient. All rights reserved.
+              Â© 2026 Klient. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-xs text-text-muted">
               <a href="#" className="hover:text-text-primary transition-colors">

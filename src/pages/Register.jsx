@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import toast from 'react-hot-toast';
@@ -41,7 +41,7 @@ export default function Register() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <img src="/src/assets/logo.svg" alt="Klient" className="w-8 h-8 rounded-lg" />
+          <img src="/logo.svg" alt="Klient" className="w-8 h-8 rounded-lg" />
           <span className="text-lg font-semibold text-text-primary">Klient</span>
         </div>
 

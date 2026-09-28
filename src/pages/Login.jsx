@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import toast from 'react-hot-toast';
@@ -34,7 +34,7 @@ export default function Login() {
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <img
-            src="/src/assets/logo.svg"
+            src="/logo.svg"
             alt="Klient"
             className="w-8 h-8 rounded-lg"
           />

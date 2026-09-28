@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   CheckCircle2,
@@ -194,7 +194,7 @@ export default function PublicProject() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img
-              src="/src/assets/logo.svg"
+              src="/logo.svg"
               alt="Klient"
               className="w-7 h-7 rounded-lg"
             />
@@ -442,7 +442,7 @@ export default function PublicProject() {
               </div>
             </div>
           ) : (
-            /* ===== Not submitted yet — show form ===== */
+            /* ===== Not submitted yet â€” show form ===== */
             <div className="card">
               {!showForm ? (
                 <>
@@ -557,7 +557,7 @@ export default function PublicProject() {
             to="/register"
             className="text-xs text-accent hover:text-accent-hover font-medium mt-1 inline-block"
           >
-            Get started with Klient →
+            Get started with Klient â†’
           </Link>
         </div>
       </main>

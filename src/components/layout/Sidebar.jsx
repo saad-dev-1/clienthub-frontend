@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+﻿import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -23,10 +23,10 @@ const navItems = [
 const CURRENCY_SYMBOLS = {
   USD: '$',
   PKR: 'Rs',
-  EUR: '€',
-  GBP: '£',
+  EUR: 'â‚¬',
+  GBP: 'Â£',
   AED: 'AED',
-  INR: '₹',
+  INR: 'â‚¹',
 };
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between gap-2 px-5 border-b border-border">
           <div className="flex items-center gap-2">
-            <img src="/src/assets/logo.svg" alt="Klient" className="w-7 h-7 rounded-lg" />
+            <img src="/logo.svg" alt="Klient" className="w-7 h-7 rounded-lg" />
             <span className="text-sm font-semibold heading-tight">
               Klient
             </span>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Lock, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -64,7 +64,7 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-bg-base flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <img src="/src/assets/logo.svg" alt="Klient" className="w-8 h-8 rounded-lg" />
+          <img src="/logo.svg" alt="Klient" className="w-8 h-8 rounded-lg" />
           <span className="text-lg font-semibold text-text-primary">
             Klient
           </span>
